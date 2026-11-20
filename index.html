@@ -1,0 +1,2518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>卡片传讯 · CAT'S INNER VOICE</title>
+<style>
+:root{
+  --accent-color:#7FA6CD; --accent-rgb:127,166,205; --accent-light:#eef3fb;
+  --bg-primary:#f5f5f5; --bg-secondary:#ffffff; --bg-secondary-rgb:255,255,255;
+  --text-primary:#333333; --text-secondary:#888888; --border-color:#e0e0e0;
+}
+*{ -webkit-tap-highlight-color:transparent; }
+html,body{ margin:0; padding:0; height:100%; overflow:hidden; background:#e8e1d4;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif; }
+.crl-chev{ font-size:16px; color:var(--text-secondary); flex-shrink:0; line-height:1; }
+</style>
+<style>
+.crl-page {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.72);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+.crl-panel {
+    width: 100%;
+    max-width: 520px;
+    height: 90vh;
+    max-height: 90vh;
+    background: var(--bg-secondary);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,.28);
+}
+.crl-title {
+    padding: 20px 24px 10px;
+    background: var(--bg-secondary);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.crl-title .crl-total { font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+.crl-tabs {
+    display: flex;
+    padding: 0 20px 12px;
+    background: var(--bg-secondary);
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+.crl-tab-btn {
+    flex: 1;
+    padding: 9px 0;
+    border-radius: 20px;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .25s cubic-bezier(.25,.8,.25,1), opacity .25s cubic-bezier(.25,.8,.25,1), background-color .25s cubic-bezier(.25,.8,.25,1), color .25s cubic-bezier(.25,.8,.25,1), border-color .25s cubic-bezier(.25,.8,.25,1), box-shadow .25s cubic-bezier(.25,.8,.25,1);
+    background-color: var(--bg-primary);
+    color: var(--text-secondary);
+    border: 1px solid transparent;
+    font-family: inherit;
+}
+.crl-tab-btn:hover { background-color: var(--border-color); color: var(--text-primary); }
+.crl-tab-btn.active {
+    background-color: var(--accent-color);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(var(--accent-rgb), .3);
+}
+.crl-toolbar {
+    padding: 12px 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: var(--bg-secondary);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+.crl-search {
+    flex: 1;
+    min-width: 120px;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 9px 14px;
+    font-size: 14px;
+    color: var(--text-primary);
+    outline: none;
+    font-family: inherit;
+}
+.crl-search:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .12); }
+.crl-tool-btn {
+    min-width: 40px;
+    height: 38px;
+    padding: 0 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-primary);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: transform .2s, opacity .2s, background-color .2s, color .2s, border-color .2s, box-shadow .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 12.5px;
+    font-weight: 600;
+    flex-shrink: 0;
+    font-family: inherit;
+}
+.crl-tool-btn:hover { background-color: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+.crl-tool-btn svg.faico { font-size: 13px; }
+.crl-body {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    contain: layout style;
+    padding: 4px 0 12px;
+    background: var(--bg-secondary);
+}
+.crl-footer {
+    display: flex;
+    gap: 10px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    flex-shrink: 0;
+}
+.crl-btn {
+    border: none;
+    border-radius: 22px;
+    padding: 12px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: filter .18s, transform .15s;
+}
+.crl-btn:active { transform: scale(.97); }
+.crl-btn-primary { flex: 1; background: var(--accent-color); color: #fff; }
+.crl-btn-secondary { background: var(--bg-primary); color: var(--text-secondary); border: 1px solid var(--border-color); }
+.crl-btn svg.faico { font-size: 13px; }
+
+.crl-cat { border-bottom: 1px solid var(--border-color); }
+.crl-cat-head, .crl-sub-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background .15s;
+}
+.crl-cat-head:hover, .crl-sub-head:hover { background: var(--bg-primary); }
+.crl-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.crl-cat-name { font-size: 14.5px; font-weight: 600; color: var(--text-primary); }
+.crl-cat-count, .crl-sub-count { font-size: 11px; color: var(--text-secondary); margin-left: auto; flex-shrink: 0; }
+.crl-cat-head svg.faico, .crl-sub-head svg.faico { font-size: 11px; color: var(--text-secondary); transition: transform .2s; flex-shrink: 0; }
+.crl-cat.open > .crl-cat-head svg.faico.fa-chevron-right,
+.crl-sub.open > .crl-sub-head svg.faico.fa-chevron-right { transform: rotate(90deg); }
+.crl-subs { display: none; background: var(--bg-primary); }
+.crl-cat.open > .crl-subs { display: block; }
+.crl-sub { border-top: 1px solid var(--border-color); }
+.crl-sub-name { font-size: 13.5px; color: var(--text-primary); font-weight: 500; }
+.crl-items { display: none; padding: 4px 10px 10px; }
+.crl-sub.open > .crl-items { display: block; }
+.crl-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 7px 8px;
+    border-radius: 10px;
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 1.5;
+    background: var(--bg-secondary);
+    margin-bottom: 5px;
+    border: 1px solid transparent;
+}
+.crl-item.off { opacity: .45; }
+.crl-item.off .crl-item-text { text-decoration: line-through; }
+.crl-item-text { flex: 1; min-width: 0; word-break: break-all; }
+.crl-item-tag {
+    font-size: 10px; padding: 1px 5px; border-radius: 5px;
+    background: var(--accent-light); color: var(--accent-color);
+    flex-shrink: 0; font-weight: 600;
+}
+/* 搜索结果：每条字卡标注所属分类 · 分组，可点击跳回 */
+.crl-group-tag {
+    display: inline-block; vertical-align: middle;
+    margin: 0 6px 2px 0; padding: 2px 7px;
+    max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    background: var(--bg-primary, #fff); color: var(--text-secondary, #9aa1ab);
+    border: 1px solid var(--border-color, #e5e0d8);
+    font-size: 10px; font-weight: 500; line-height: 1.3;
+    cursor: pointer; -webkit-tap-highlight-color: transparent;
+}
+.crl-group-tag:active { transform: scale(.96); }
+.crl-edited-tag { margin-left: 6px; vertical-align: middle; }
+.crl-item-act {
+    border: none; background: none; color: var(--text-secondary);
+    font-size: 12px; cursor: pointer; padding: 4px 5px; border-radius: 6px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+}
+.crl-item-act:hover { background: var(--bg-primary); color: var(--accent-color); }
+.crl-item-act.del:hover { color: #e53935; }
+.crl-item-act.on { color: var(--accent-color); }
+.crl-item-act svg.faico { font-size: 12px; }
+.crl-more {
+    text-align: center; font-size: 12px; color: var(--accent-color);
+    padding: 8px; cursor: pointer; background: none; border: none; width: 100%; font-family: inherit;
+}
+.crl-empty { text-align: center; padding: 50px 20px; color: var(--text-secondary); font-size: 13px; }
+.crl-empty svg.faico { font-size: 40px; opacity: .35; display: block; margin: 0 auto 12px; color: var(--accent-color); width: 40px; height: 40px; }
+.crl-hint { font-size: 11px; color: var(--text-secondary); padding: 8px 16px 10px; line-height: 1.6; }
+
+.crl-emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; padding: 8px 14px; }
+.crl-emoji {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    font-size: 24px; background: var(--bg-primary); border-radius: 12px; cursor: pointer;
+    transition: transform .15s;
+}
+.crl-emoji:active { transform: scale(.9); }
+
+.crl-dict-row {
+    display: flex; align-items: center; gap: 12px; padding: 11px 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+.crl-dict-name { flex: 1; font-size: 14px; color: var(--text-primary); font-weight: 500; }
+.crl-dict-sub { font-size: 11px; color: var(--text-secondary); font-weight: 400; }
+.crl-sw {
+    width: 44px; height: 25px; border-radius: 13px; background: var(--border-color);
+    position: relative; cursor: pointer; transition: background .22s; flex-shrink: 0;
+}
+.crl-sw::after {
+    content: ''; position: absolute; top: 3px; left: 3px; width: 19px; height: 19px;
+    border-radius: 50%; background: #fff; transition: transform .22s; box-shadow: 0 1px 3px rgba(0,0,0,.2);
+}
+.crl-sw.on { background: var(--accent-color); }
+.crl-sw.on::after { transform: translateX(19px); }
+
+/* 分类头部抽取开关：小一号，放在分类名右侧，点它不会展开分类 */
+.crl-catsw {
+    width: 34px; height: 19px; border-radius: 10px; background: #cfc8c0;
+    position: relative; cursor: pointer; transition: background .22s; flex-shrink: 0;
+    margin-left: auto;
+}
+.crl-catsw-knob {
+    position: absolute; top: 2px; left: 2px; width: 15px; height: 15px;
+    border-radius: 50%; background: #fff; transition: transform .22s;
+    box-shadow: 0 1px 3px rgba(0,0,0,.22);
+}
+.crl-catsw.on { background: #7cb98a; }
+.crl-catsw.on .crl-catsw-knob { transform: translateX(15px); }
+.crl-cat.catoff .crl-cat-name { opacity: .5; }
+.crl-cat.catoff .crl-dot { opacity: .45; }
+
+/* 分组管理 */
+.crl-grp-row {
+    display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+.crl-grp-name { flex: 1; font-size: 14px; color: var(--text-primary); font-weight: 500; }
+.crl-grp-sub { font-size: 11px; color: var(--text-secondary); font-weight: 400; }
+.crl-grp-act {
+    border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-secondary);
+    font-size: 12px; cursor: pointer; padding: 5px 10px; border-radius: 8px; flex-shrink: 0;
+    font-family: inherit; display: flex; align-items: center; gap: 4px;
+}
+.crl-grp-act:hover { color: var(--accent-color); border-color: var(--accent-color); }
+.crl-grp-act.del:hover { color: #e53935; border-color: #e53935; }
+.crl-grp-act svg.faico { font-size: 11px; }
+
+/* 弹窗 */
+.crl-mask {
+    position: fixed; inset: 0; z-index: 3100; background: rgba(0,0,0,.45);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+}
+.crl-dialog {
+    width: 100%; max-width: 380px; background: var(--bg-secondary); border-radius: 16px;
+    padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.2);
+    max-height: 84vh; overflow-y: auto;
+}
+.crl-dialog-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 12px; }
+.crl-dialog textarea, .crl-dialog input, .crl-dialog select {
+    width: 100%; border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 12px;
+    font-size: 13.5px; color: var(--text-primary); background: var(--bg-primary);
+    outline: none; font-family: inherit; margin-bottom: 10px; resize: vertical; box-sizing: border-box;
+}
+.crl-dialog textarea:focus, .crl-dialog input:focus { border-color: var(--accent-color); }
+.crl-dialog-btns { display: flex; gap: 10px; }
+.crl-dialog-btns button {
+    flex: 1; border: none; border-radius: 20px; padding: 10px; font-size: 13.5px;
+    font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.crl-dialog-btns .cancel { background: var(--bg-primary); color: var(--text-secondary); }
+.crl-dialog-btns .ok { background: var(--accent-color); color: #fff; }
+.crl-dialog-note { font-size: 11.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; }
+</style>
+<style>
+/* ===== 卡片传讯字卡 · 纸质手写白卡（独立模块，不进字卡库抽取池） ===== */
+.pc-panel { position:fixed; inset:0; z-index:6000; display:none; background:#e8e1d4; overflow:hidden; }
+.pc-panel.show { display:block; }
+.pc-paper { position:absolute; inset:8px; background:#f0eade; border-radius:18px; overflow:hidden; box-shadow:0 10px 40px rgba(80,55,35,.22); }
+.pc-wave { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:1; }
+.pc-paw { position:absolute; width:30px; height:30px; z-index:2; opacity:.85; pointer-events:none; }
+.pc-paw.tl { top:12px; left:14px; transform:rotate(-18deg); }
+.pc-paw.tr { top:12px; right:14px; transform:rotate(18deg) scaleX(-1); }
+.pc-watermark { position:absolute; top:30%; left:0; right:0; text-align:center; z-index:1; pointer-events:none; opacity:.085; }
+.pc-watermark .pc-wm1 { font:italic 700 40px/1 Georgia,'Times New Roman',serif; color:#9a6f4a; letter-spacing:1px; }
+.pc-watermark .pc-wm2 { font:italic 700 34px/1 Georgia,'Times New Roman',serif; color:#9a6f4a; margin-top:-4px; }
+.pc-watermark .pc-wm3 { font:600 12px/1 Georgia,serif; color:#9a6f4a; letter-spacing:5px; margin-top:8px; }
+.pc-watermark .pc-cat { margin-top:8px; }
+.pc-fan { position:absolute; bottom:-232px; left:50%; transform:translateX(-50%); width:620px; height:400px; z-index:1; pointer-events:none; opacity:.9; }
+.pc-fan i { position:absolute; bottom:0; left:50%; width:78px; height:330px; margin-left:-39px;
+  transform-origin:50% 100%; border:1px solid #d9c39a; border-bottom:none; border-radius:8px 8px 0 0;
+  background:repeating-linear-gradient(90deg,#fbf6ea 0 8px,#f3ead6 8px 9px,#fbf6ea 9px 17px);
+  box-shadow:0 -2px 6px rgba(120,90,55,.10); }
+.pc-fan i::after { content:''; position:absolute; left:8px; right:8px; top:12px; bottom:12px;
+  border-left:1px solid #e2cfa8; border-right:1px solid #e2cfa8; border-radius:4px; }
+
+.pc-content { position:relative; z-index:3; height:100%; display:flex; flex-direction:column; padding:14px 16px 18px; box-sizing:border-box; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.pc-content.spread-mode { padding-bottom:212px; }
+.pc-topbar { display:flex; align-items:flex-start; gap:10px; flex:0 0 auto; min-height:44px; }
+.pc-x { flex:0 0 auto; width:34px; height:34px; border-radius:50%; border:1px solid #c8b79c; background:rgba(255,255,255,.7); color:#7a5a3c; font-size:16px; cursor:pointer; line-height:1; }
+.pc-x:active { transform:scale(.94); }
+.pc-topbar .pc-tt { flex:1; text-align:center; }
+.pc-title { font:600 17px/1.3 'KaiTi','STKaiti',serif; color:#6b4a30; letter-spacing:2px; }
+.pc-sub { font:400 10.5px/1.4 -apple-system,sans-serif; color:#a08c72; letter-spacing:1px; margin-top:3px; }
+.pc-topbar .pc-right { flex:0 0 auto; width:34px; }
+
+.pc-home { flex:1; display:flex; flex-direction:column; justify-content:center; gap:11px; padding:8px 2px 190px; }
+.pc-lead { text-align:center; font:400 12px/1.8 'KaiTi','STKaiti',serif; color:#8a7159; margin-bottom:2px; }
+.pc-mode-btn { display:block; width:100%; text-align:left; border:1px solid #d8c7ab; border-radius:14px;
+  background:#fffcf5; padding:13px 15px; cursor:pointer; box-shadow:0 2px 10px rgba(120,90,55,.08); }
+.pc-mode-btn:active { transform:scale(.985); }
+.pc-mode-h { display:flex; align-items:center; gap:8px; }
+.pc-mode-ico { font-size:19px; }
+.pc-mode-name { font:600 15px/1.3 'KaiTi','STKaiti',serif; color:#6b4a30; letter-spacing:1px; flex:1; }
+.pc-mode-arrow { color:#b9a284; font-size:14px; }
+.pc-mode-desc { font:400 11.5px/1.7 -apple-system,sans-serif; color:#9a876e; margin-top:6px; }
+.pc-mode-state { display:inline-block; margin-top:8px; font-size:10.5px; padding:3px 9px; border-radius:999px; background:#eee6d7; color:#9a876e; }
+.pc-mode-state.on { background:#e2efe3; color:#5b8a62; }
+
+.pc-probs, .pc-tempo { border:1px solid #d8c7ab; border-radius:14px; background:#fffcf5; padding:11px 14px; }
+.pc-probs-h { font:600 12px/1.4 'KaiTi','STKaiti',serif; color:#6b4a30; letter-spacing:1px; display:flex; justify-content:space-between; align-items:center; }
+.pc-probs-h small { font:400 10px/1 -apple-system,sans-serif; color:#a08c72; }
+.pc-probs-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:5px; margin:10px 0 9px; }
+.pc-prob-cell { text-align:center; }
+.pc-prob-cell span { display:block; font-size:10px; color:#9a876e; margin-bottom:3px; }
+.pc-prob-cell input { width:100%; box-sizing:border-box; border:1px solid #ded0b8; border-radius:6px; background:#fffdf7; text-align:center; font-size:11px; padding:5px 1px; color:#6b4a30; outline:none; }
+.pc-prob-cell input:focus { border-color:#b98c5e; }
+.pc-probs-btns { display:flex; gap:8px; align-items:center; }
+.pc-mini-btn { border:1px solid #d8c7ab; border-radius:999px; background:#fffdf7; color:#7a5a3c; font-size:11px; padding:6px 12px; cursor:pointer; }
+.pc-mini-btn:active { transform:scale(.96); }
+.pc-switch { display:flex; align-items:center; gap:7px; font-size:10.5px; color:#9a876e; margin-left:auto; }
+.pc-switch input { appearance:none; -webkit-appearance:none; width:32px; height:18px; border-radius:999px; background:#ddd0b9; position:relative; cursor:pointer; transition:background .2s; flex:0 0 auto; }
+.pc-switch input::after { content:''; position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.18); transition:left .2s; }
+.pc-switch input:checked { background:#8b6a49; }
+.pc-switch input:checked::after { left:16px; }
+
+/* 节奏 / 时间设置 */
+.pc-tempo-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:10px; }
+.pc-tempo-cell { background:#fffdf7; border:1px solid #e6d9c1; border-radius:9px; padding:7px 9px; }
+.pc-tempo-cell label { display:block; font:400 10px/1.4 -apple-system,sans-serif; color:#9a876e; margin-bottom:4px; }
+.pc-tempo-cell input { width:100%; box-sizing:border-box; border:1px solid #ded0b8; border-radius:6px; background:#fff; text-align:center; font-size:12px; padding:4px 2px; color:#6b4a30; outline:none; }
+.pc-tempo-cell input:focus { border-color:#b98c5e; }
+.pc-tempo-cell .u { font-size:9px; color:#b3a087; }
+.pc-tempo-cell input[type="checkbox"] { appearance:none; -webkit-appearance:none; width:32px; height:18px;
+  border-radius:999px; background:#ddd0b9; border:none; position:relative; cursor:pointer; padding:0; flex:0 0 auto; }
+.pc-tempo-cell input[type="checkbox"]::after { content:''; position:absolute; top:2px; left:2px; width:14px; height:14px;
+  border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.18); transition:left .2s; }
+.pc-tempo-cell input[type="checkbox"]:checked { background:#8b6a49; }
+.pc-tempo-cell input[type="checkbox"]:checked::after { left:16px; }
+.pc-tempo-note { font:400 10px/1.6 -apple-system,sans-serif; color:#a08c72; margin-top:8px; }
+
+/* 抽卡模式页 */
+.pc-draw { flex:1; display:flex; flex-direction:column; }
+.pc-draw-tabs { display:flex; gap:8px; margin:12px 0 10px; flex:0 0 auto; }
+.pc-tab { flex:1; border:1px solid #d8c7ab; border-radius:999px; background:rgba(255,252,245,.85); color:#9a876e; font:600 12.5px/1 'KaiTi','STKaiti',serif; padding:10px 4px; cursor:pointer; letter-spacing:1px; }
+.pc-tab.active { background:#8b6a49; border-color:#8b6a49; color:#fff8ec; }
+.pc-tab-body { flex:1; display:flex; flex-direction:column; min-height:0; }
+.pc-question { width:100%; box-sizing:border-box; border:1px solid #d8c7ab; border-radius:12px; background:#fffcf5; padding:11px 13px; font:400 13px/1.7 'KaiTi','STKaiti',serif; color:#6b4a30; resize:none; outline:none; }
+.pc-question:focus { border-color:#b98c5e; }
+.pc-go { border:none; border-radius:999px; background:#8b6a49; color:#fff8ec; font:600 14px/1 'KaiTi','STKaiti',serif; letter-spacing:3px; padding:13px; margin:10px 0; cursor:pointer; box-shadow:0 4px 14px rgba(120,90,55,.22); }
+.pc-go:active { transform:scale(.98); }
+.pc-result { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-bottom:190px; }
+.pc-res-head { font:600 12px/1.6 'KaiTi','STKaiti',serif; color:#6b4a30; letter-spacing:1px; margin:4px 0 9px; }
+.pc-res-line { font:400 15px/2 'KaiTi','STKaiti',serif; color:#7a5a3c; background:#fffcf5; border:1px solid #e0d1b8; border-radius:10px; padding:9px 12px; margin-bottom:9px; word-break:break-all; }
+.pc-res-groups { font:400 11px/1.7 -apple-system,sans-serif; color:#a08c72; margin:2px 0 12px; display:flex; flex-wrap:wrap; gap:4px 8px; }
+.pc-chip { display:inline-block; font-size:10px; color:#9a876e; background:rgba(255,252,245,.95); border:1px solid #e4d5bc; border-radius:999px; padding:2px 8px; white-space:nowrap; }
+.pc-swipe-tip { font:400 10px/1.5 -apple-system,sans-serif; color:#a08c72; text-align:center; padding:0 0 6px; }
+.pc-cards-row { display:flex; flex-wrap:wrap; gap:8px; padding:4px 2px 12px; }
+.pc-shuffling { text-align:center; font:400 13px/2 'KaiTi','STKaiti',serif; color:#9a876e; padding:26px 0; letter-spacing:2px; }
+
+/* 单张白卡（3D 翻转） */
+.pc-card { flex:0 0 auto; width:84px; height:120px; perspective:700px; cursor:pointer; scroll-snap-align:center; -webkit-tap-highlight-color:transparent; }
+.pc-card-in { position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .6s cubic-bezier(.2,.7,.3,1); }
+.pc-card.flipped .pc-card-in { transform:rotateY(180deg); }
+.pc-side { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:8px; border:1px solid #c9b392; box-sizing:border-box; overflow:hidden; box-shadow:0 3px 10px rgba(110,80,50,.18); }
+.pc-back { background:#f7f1e4; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.pc-face { background:#fbf6ea; transform:rotateY(180deg); display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.pc-side::before { content:''; position:absolute; inset:5px; border:1px solid #d8c19c; border-radius:5px; pointer-events:none; }
+.pc-corner { position:absolute; top:8px; left:9px; font-size:9px; color:#b39a78; letter-spacing:.5px; z-index:1; }
+.pc-num { position:absolute; bottom:8px; right:10px; font:italic 10px/1 Georgia,serif; color:#c1a882; z-index:1; }
+.pc-word { font:600 20px/1.35 'KaiTi','STKaiti',serif; color:#6b4a30; text-align:center; padding:0 8px; word-break:break-all; z-index:1; }
+.pc-word.small { font-size:14px; }
+.pc-word.tiny { font-size:11px; line-height:1.5; }
+.pc-hint { font:400 9px/1.5 'KaiTi','STKaiti',serif; color:#a08c72; margin-top:6px; padding:0 8px; text-align:center; z-index:1; }
+.pc-wm-txt { font:italic 700 10px/1.2 Georgia,serif; color:#b08a61; margin-top:5px; letter-spacing:.5px; }
+.pc-wm-sub { font:600 7px/1 Georgia,serif; color:#bba282; letter-spacing:2px; margin-top:3px; }
+.pc-card.sel .pc-side { border-color:#a8743f; box-shadow:0 0 0 2px rgba(168,116,63,.35),0 4px 14px rgba(110,80,50,.24); }
+.pc-card.dragging { position:fixed !important; z-index:9999; margin:0 !important; transform:none !important; pointer-events:none; transition:none; }
+.pc-drag-ph { flex:0 0 auto; visibility:hidden; }
+
+/* ===== 底部牌滑动区（参考图底部扇形牌堆，可左右滑 / 点选 / 拖动） ===== */
+.pc-fan-slider { position:absolute; left:0; right:0; bottom:0; height:198px; z-index:5;
+  background:linear-gradient(to bottom,rgba(240,234,222,0),rgba(240,234,222,.92) 24%,#f0eade 60%); }
+.pc-fan-label { text-align:center; font:400 10.5px/1.5 'KaiTi','STKaiti',serif; color:#98805f; padding:8px 0 0; letter-spacing:.5px; }
+.pc-spread-rail { display:flex; align-items:flex-end; gap:0; overflow-x:auto; overflow-y:hidden;
+  padding:16px 30px 14px; height:168px; box-sizing:border-box; -webkit-overflow-scrolling:touch;
+  scroll-snap-type:x proximity; touch-action:pan-x; }
+.pc-spread-rail .pc-card { touch-action:none; }
+.pc-spread-rail .pc-card { margin-left:-48px; flex:0 0 auto; width:76px; height:108px;
+  transform:rotate(var(--rot,0deg)); transform-origin:50% 100%; transition:transform .22s ease, margin .22s ease; }
+.pc-spread-rail .pc-card:first-child { margin-left:0; }
+.pc-spread-rail .pc-card.sel { transform:translateY(-20px) rotate(0deg); z-index:3; margin-left:2px; }
+.pc-spread-rail .pc-card.sel + .pc-card { margin-left:2px; }
+.pc-spread-rail::-webkit-scrollbar { height:4px; }
+.pc-spread-rail::-webkit-scrollbar-thumb { background:#d3bd9c; border-radius:4px; }
+
+/* ===== 展牌页：自由牌桌（横向长方形垫布 + 任意落点 + 自动避让） ===== */
+.pc-board-bar { display:flex; align-items:center; gap:7px; flex:0 0 auto; padding:2px 0 8px; }
+.pc-board-title { flex:1; font:600 12px/1.4 'KaiTi','STKaiti',serif; color:#6b4a30; letter-spacing:1px; }
+.pc-board-title span { font:400 10px/1 -apple-system,sans-serif; color:#a08c72; letter-spacing:0; margin-left:4px; }
+.pc-board { position:relative; flex:1; min-height:280px; border-radius:14px; }
+/* 横向长方形垫布：只作视觉引导，不限制落点 */
+.pc-board-mat { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(84%,264px); height:156px; box-sizing:border-box;
+  border:1.5px dashed rgba(168,116,63,.30); border-radius:12px;
+  background:rgba(255,252,245,.40); pointer-events:none; }
+.pc-board-hint { position:absolute; left:0; right:0; top:50%; transform:translateY(-50%);
+  text-align:center; font:400 11.5px/1.9 'KaiTi','STKaiti',serif; color:#ab957a; pointer-events:none; }
+.pc-board.has-cards .pc-board-hint { display:none; }
+.pc-shuffle-veil { position:absolute; inset:0; z-index:8; display:none; align-items:center; justify-content:center;
+  background:rgba(240,234,222,.72); border-radius:14px; }
+.pc-board.shuffling .pc-shuffle-veil { display:flex; }
+.pc-shuffle-veil span { font:400 14px/1.8 'KaiTi','STKaiti',serif; color:#8b6a49; letter-spacing:3px; }
+/* 放到牌桌上的小卡：尺寸变小，横竖各能排 4~5 张 */
+.pc-board .pc-card { touch-action:none; }
+.pc-board .pc-card.placed { position:absolute; width:54px; height:74px; margin:0 !important;
+  transform:none !important; z-index:2; transition:left .2s ease, top .2s ease; }
+.pc-board .pc-card.placed .pc-word { font-size:13px; }
+.pc-board .pc-card.placed .pc-word.small { font-size:10px; }
+.pc-board .pc-card.placed .pc-word.tiny { font-size:9px; }
+.pc-board .pc-card.placed .pc-corner { font-size:7px; top:5px; left:6px; }
+.pc-board .pc-card.placed .pc-num { font-size:8px; bottom:5px; right:7px; }
+.pc-board .pc-card.placed .pc-hint { font-size:7px; margin-top:3px; }
+.pc-board .pc-card.placed .pc-side::before { inset:3px; }
+.pc-board .pc-card.placed svg { width:22px; height:19px; }
+.pc-board .pc-card.placed .pc-wm-txt { font-size:8px; margin-top:3px; }
+.pc-board .pc-card.placed .pc-wm-sub { font-size:6px; letter-spacing:1px; }
+.pc-board .pc-card.placed.sel .pc-side { border-color:#a8743f; box-shadow:0 0 0 2px rgba(168,116,63,.35),0 4px 14px rgba(110,80,50,.24); }
+
+
+/* 卡牌内容库：对齐字卡库分类行布局 */
+.pcdl { padding: 0 0 10px; }
+.pcdl-note { padding: 10px 14px 8px; font-size: 11.5px; line-height: 1.7; color: var(--text-secondary); }
+.pcdl-note strong { color: var(--text-primary); }
+.pcdl-mini { border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-secondary);
+  border-radius: 14px; padding: 3px 10px; font-size: 11px; cursor: pointer; font-family: inherit; }
+.pcdl-hint { padding: 6px 14px; font-size: 11px; color: var(--text-secondary); }
+.pcdl-results { padding: 0 8px; }
+.pcdl-items { padding: 6px 8px 10px; }
+.pcdl-row { margin-bottom: 6px; cursor: pointer; }
+.pcdl-no { font-size: 10px; color: #b09a7c; font-style: italic; margin-right: 4px; }
+.pcdl-b { font-size: 11px; color: #a08c72; }
+.pcdl-cat .crl-subs { background: var(--bg-primary); }
+.pcdl-more { display: block; margin: 6px auto 4px; }
+.crl-group-tag { cursor: pointer; }
+.crl-group-tag:hover { color: var(--accent-color); border-color: var(--accent-color); }
+
+/* 更换牌堆内容 · 分组来源选择 */
+.pc-src-quick { display:flex; gap:6px; flex-wrap:wrap; margin:6px 0 8px; }
+.pc-src-list { max-height:38vh; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  border:1px solid #ddd0b8; border-radius:9px; background:#fffdf7; padding:7px; margin-bottom:10px; }
+.pc-deck-dialog label.pc-src-row { display:flex; align-items:center; gap:9px; padding:7px 6px;
+  border-radius:7px; font-size:12.5px; color:#6b4a30; cursor:pointer; margin:0; }
+.pc-src-row:active { background:#f3ead8; }
+.pc-deck-dialog .pc-src-row input[type=checkbox] { width:17px; height:17px; padding:0; margin:0;
+  -webkit-appearance:checkbox; appearance:checkbox; border:initial; border-radius:initial;
+  background:initial; accent-color:#a8743f; flex-shrink:0; box-sizing:border-box; }
+#pc-src-count.pc-deck-dialog-input { width:100%; }
+.pc-src-row.off { opacity:.42; cursor:not-allowed; }
+.pc-src-row .pc-src-n { margin-left:auto; font-size:11px; color:#a08c72; }
+.pc-src-row .pc-src-off { font-size:10px; color:#c98b7a; margin-left:4px; }
+/* ===== 底部牌堆：横向滑动 / 直接拖走 / 洗牌动画 ===== */
+.pc-spread-rail .pc-card { opacity:0; transition:opacity .28s ease, transform .22s ease; }
+.pc-spread-rail .pc-card.dealt { opacity:1; }
+.pc-spread-rail.shuffling .pc-card { opacity:1; transition:none; }
+@keyframes pcShuffleCard {
+  0%   { transform:rotate(0deg) translate(0,18px) scale(.82); opacity:0; }
+  18%  { transform:rotate(calc(var(--rot,0deg) - 26deg)) translate(var(--sx,26px), -58px) scale(.94); opacity:1; }
+  38%  { transform:rotate(calc(var(--rot,0deg) + 22deg)) translate(-30px, -34px) scale(1.05); }
+  58%  { transform:rotate(calc(var(--rot,0deg) - 15deg)) translate(var(--sx,26px), -48px) scale(.97); }
+  80%  { transform:rotate(calc(var(--rot,0deg) + 8deg)) translate(0, -12px) scale(1); }
+  100% { transform:rotate(var(--rot,0deg)) translate(0,0) scale(1); opacity:1; }
+}
+.pc-spread-rail.shuffling .pc-card { animation:pcShuffleCard 1.15s cubic-bezier(.3,.7,.35,1) both; }
+.pc-spread-rail.shuffling.no-anim .pc-card { animation:none; opacity:1; }
+.pc-spread-rail .pc-card.sel { transform:translateY(-20px) rotate(0deg); z-index:3; margin-left:2px; opacity:1; }
+.pc-spread-rail .pc-card.sel + .pc-card { margin-left:2px; }
+
+/* 聊天里的卡片消息 */
+.pc-msg { width:100%; max-width:calc(100vw - 120px); min-width:0; box-sizing:border-box; overflow:hidden; }
+.pc-msg-h { font:600 12px/1.5 'KaiTi','STKaiti',serif; color:var(--text-primary,#4a4238); margin-bottom:7px; letter-spacing:1px; }
+.pc-msg-line { font:400 13.5px/1.9 'KaiTi','STKaiti',serif; color:var(--text-primary,#4a4238); background:#fffcf5; border:1px solid #e0d1b8; border-radius:9px; padding:7px 10px; margin-bottom:8px; word-break:break-all; }
+.pc-msg-groups { font:400 10.5px/1.6 -apple-system,sans-serif; color:var(--text-secondary,#9aa1ab); margin-bottom:7px; display:block; width:100%; max-width:100%; line-height:1.9; }
+.pc-msg-groups .pc-chip { font-size:9px; padding:1px 6px; display:inline-block; margin:0 4px 3px 0; }
+.pc-msg-groups, .pc-msg-line { width:100%; max-width:100%; box-sizing:border-box; min-width:0; }
+.pc-msg-cards { display:flex; flex-wrap:wrap; gap:6px; padding:2px 0 6px; overflow:visible; width:100%; max-width:100%; box-sizing:border-box; min-width:0; }
+.pc-msg-cards .pc-card { width:70px; height:100px; }
+.pc-msg-cards .pc-word { font-size:16px; }
+.pc-msg-cards .pc-word.small { font-size:12px; }
+.pc-msg-cards .pc-word.tiny { font-size:10px; }
+.pc-msg-cards .pc-corner { font-size:8px; }
+.pc-msg-cards .pc-hint { font-size:8px; }
+.pc-msg-tip { font:400 10px/1.5 -apple-system,sans-serif; color:var(--text-secondary,#9aa1ab); margin-top:3px; }
+
+/* ===== 卡牌内容库（挂在字卡库内，独立数据） ===== */
+.pcdl { padding:2px 0 8px; }
+.pcdl-note { font:400 11px/1.7 -apple-system,sans-serif; color:var(--text-secondary,#9aa1ab);
+  background:rgba(168,116,63,.07); border:1px solid rgba(168,116,63,.18); border-radius:9px; padding:9px 11px; margin-bottom:10px; }
+.pcdl-actions { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:10px; }
+.pcdl-btn { border:1px solid #d8c7ab; border-radius:999px; background:#fffdf7; color:#7a5a3c;
+  font-size:11px; padding:7px 13px; cursor:pointer; }
+.pcdl-btn.pri { background:#8b6a49; border-color:#8b6a49; color:#fff8ec; }
+.pcdl-btn:active { transform:scale(.96); }
+.pcdl-groups { display:flex; gap:5px; overflow-x:auto; padding-bottom:8px; margin-bottom:6px; -webkit-overflow-scrolling:touch; }
+.pcdl-g { flex:0 0 auto; font-size:10.5px; color:#9a876e; border:1px solid #e0cfb3; background:#fffdf7;
+  border-radius:999px; padding:4px 10px; cursor:pointer; white-space:nowrap; }
+.pcdl-g.active { background:#8b6a49; border-color:#8b6a49; color:#fff8ec; }
+.pcdl-item { display:flex; align-items:center; gap:8px; padding:8px 9px; border-bottom:1px solid rgba(150,130,100,.14); }
+.pcdl-no { flex:0 0 auto; font:italic 10px/1 Georgia,serif; color:#b3a087; width:26px; }
+.pcdl-main { flex:1; min-width:0; }
+.pcdl-f { font:600 13px/1.4 'KaiTi','STKaiti',serif; color:var(--text-primary,#4a4238); word-break:break-all; }
+.pcdl-b { font:400 10px/1.5 -apple-system,sans-serif; color:var(--text-secondary,#9aa1ab); margin-top:2px; word-break:break-all; }
+.pcdl-tag { display:inline-block; font-size:9px; color:#9a876e; border:1px solid #e4d5bc; border-radius:999px; padding:1px 6px; margin-top:3px; }
+.pcdl-tag.custom { background:#eaf3ea; border-color:#c9dfc9; color:#5b8a62; }
+.pcdl-tag.edited { background:#fdf0e0; border-color:#eed4ad; color:#a87b42; }
+.pcdl-ops { flex:0 0 auto; display:flex; gap:5px; }
+.pcdl-op { border:none; background:transparent; color:#a08c72; font-size:11px; cursor:pointer; padding:4px 5px; }
+.pcdl-op.del { color:#c07a6a; }
+.pcdl-more { display:block; margin:12px auto; }
+.pcdl-empty { text-align:center; color:#a08c72; font-size:12px; padding:30px 0; }
+.pcdl-test { text-align:center; font:400 13px/1.8 'KaiTi','STKaiti',serif; color:#6b4a30;
+  background:#fffcf5; border:1px solid #e0d1b8; border-radius:10px; padding:12px; margin-bottom:10px; }
+
+/* 卡牌编辑弹窗 */
+.pc-deck-mask { position:fixed; inset:0; z-index:6500; background:rgba(40,28,18,.45); display:none; align-items:center; justify-content:center; padding:20px; }
+.pc-deck-mask.show { display:flex; }
+.pc-deck-dialog { width:100%; max-width:340px; background:#f7f1e5; border-radius:16px; padding:18px; box-shadow:0 16px 40px rgba(60,40,20,.3); }
+.pc-deck-title { font:600 15px/1.4 'KaiTi','STKaiti',serif; color:#6b4a30; letter-spacing:1px; margin-bottom:12px; }
+.pc-deck-dialog label { display:block; font-size:10.5px; color:#9a876e; margin:9px 0 4px; }
+.pc-deck-dialog input { width:100%; box-sizing:border-box; border:1px solid #d8c7ab; border-radius:8px;
+  background:#fffdf7; padding:9px 10px; font-size:13px; color:#6b4a30; outline:none; }
+.pc-deck-dialog input:focus { border-color:#b98c5e; }
+.pc-deck-btns { display:flex; gap:8px; margin-top:16px; }
+.pc-deck-btns button { flex:1; border:none; border-radius:999px; padding:10px; font-size:13px; font-weight:600; cursor:pointer; }
+.pc-deck-btns .cancel { background:#e8dfcd; color:#8a7159; }
+.pc-deck-btns .ok { background:#8b6a49; color:#fff8ec; }
+
+/* ===== 拖拽代理：挂在 body，脱离牌堆滚动容器，不受重绘与 pointercancel 影响 ===== */
+.pc-drag-ghost { position:fixed !important; z-index:2147483000 !important; margin:0 !important;
+  pointer-events:none !important; transform:none !important; opacity:.97;
+  filter:drop-shadow(0 12px 22px rgba(80,50,25,.38)); transition:none !important; }
+.pc-drag-ghost .pc-card-in { transition:none !important; }
+.pc-spread-rail .pc-card.ghost-src,
+.pc-board .pc-card.ghost-src { opacity:.26 !important; }
+/* 洗牌蒙层：淡入 + 文字呼吸，让动画明确可见 */
+.pc-board.shuffling .pc-shuffle-veil { display:flex; animation:pcVeilIn .25s ease both; }
+.pc-shuffle-veil span { animation:pcVeilPulse 1.1s ease-in-out infinite; }
+@keyframes pcVeilIn { from { opacity:0 } to { opacity:1 } }
+@keyframes pcVeilPulse { 0%,100% { opacity:.55; letter-spacing:3px } 50% { opacity:1; letter-spacing:7px } }
+/* 卡牌批量编辑弹窗 */
+.pc-deck-dialog textarea { width:100%; box-sizing:border-box; border:1px solid #d8c7ab; border-radius:8px;
+  background:#fffdf7; padding:9px 10px; font:400 12px/1.7 'KaiTi','STKaiti',serif; color:#6b4a30;
+  outline:none; resize:vertical; min-height:132px; }
+.pc-deck-dialog textarea:focus { border-color:#b98c5e; }
+.pcdl-item .pcdl-main { cursor:pointer; }
+.pcdl-item:active .pcdl-main { opacity:.72; }
+
+/* 随机抽牌页：三张牌背交错飞舞的洗牌动画 */
+.pc-shuffle-anim { display:flex; justify-content:center; align-items:center; gap:12px; padding:30px 0 8px; }
+.pc-shuffle-anim i { display:block; width:54px; height:76px; border:1px solid #c9b392; border-radius:7px;
+  background:repeating-linear-gradient(90deg,#f8f2e5 0 6px,#f1e7d2 6px 7px,#f8f2e5 7px 13px);
+  box-shadow:0 4px 12px rgba(110,80,50,.20); animation:pcFlyCard .9s ease-in-out infinite; }
+.pc-shuffle-anim i:nth-child(2) { animation-delay:.16s; }
+.pc-shuffle-anim i:nth-child(3) { animation-delay:.32s; }
+@keyframes pcFlyCard { 0%,100% { transform:translateY(0) rotate(-8deg) }
+  50% { transform:translateY(-18px) rotate(10deg) } }
+</style>
+<style>
+.pc-demo-tip{ font:400 11.5px/1.7 'KaiTi','STKaiti',serif; color:#9a876e; margin-bottom:8px; }
+.pc-demo-log{ flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  background:rgba(255,252,245,.7); border:1px solid #d8c7ab; border-radius:12px;
+  padding:10px; margin-bottom:9px; }
+.pc-demo-empty{ text-align:center; color:#b6a488; font:400 12px/2 'KaiTi','STKaiti',serif; padding:24px 8px; }
+.pc-demo-row{ margin-bottom:12px; }
+.pc-demo-who{ font-size:10.5px; color:#a08c72; margin-bottom:4px; }
+.pc-demo-me{ display:inline-block; max-width:78%; background:#dce8f5; color:#41525f;
+  border-radius:12px 12px 4px 12px; padding:8px 11px; font-size:13px; line-height:1.6; word-break:break-all; }
+.pc-demo-ta .pc-msg{ background:rgba(255,255,255,.85); border:1px solid #e3d6bf; border-radius:12px; padding:10px; }
+.pc-demo-wait{ font:italic 12px/1.6 'KaiTi','STKaiti',serif; color:#b09a7c; }
+.pc-demo-input{ display:flex; gap:8px; flex:0 0 auto; }
+.pc-demo-input input{ flex:1; min-width:0; box-sizing:border-box; border:1px solid #d8c7ab; border-radius:999px;
+  background:#fffcf5; padding:10px 14px; font:400 13px/1.4 'KaiTi','STKaiti',serif; color:#6b4a30; outline:none; }
+.pc-demo-input button{ border:none; border-radius:999px; background:#8b6a49; color:#fff8ec;
+  padding:0 20px; font:600 13px/1 'KaiTi','STKaiti',serif; letter-spacing:2px; cursor:pointer; }
+#sa-mask{ position:fixed; inset:0; z-index:99999; display:none; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.5); }
+#sa-mask.show{ display:flex; }
+#sa-box{ width:min(320px,88vw); background:#f7f1e5; border-radius:16px; padding:20px;
+  box-shadow:0 16px 40px rgba(60,40,20,.3); }
+#sa-title{ font:600 15px/1.5 'KaiTi','STKaiti',serif; color:#6b4a30; margin-bottom:12px; }
+#sa-input{ width:100%; box-sizing:border-box; border:1px solid #d8c7ab; border-radius:8px;
+  background:#fffdf7; padding:9px 10px; font-size:13px; color:#6b4a30; outline:none; }
+#sa-btns{ display:flex; gap:8px; margin-top:16px; }
+#sa-btns button{ flex:1; border:none; border-radius:999px; padding:10px; font-size:13px; font-weight:600; cursor:pointer; }
+#sa-cancel{ background:#e8dfcd; color:#8a7159; }
+#sa-ok{ background:#8b6a49; color:#fff8ec; }
+#sa-toast{ position:fixed; left:50%; bottom:11vh; transform:translateX(-50%) translateY(10px);
+  z-index:100000; background:rgba(60,44,28,.92); color:#fff8ec; padding:10px 18px; border-radius:999px;
+  font-size:12.5px; opacity:0; pointer-events:none; transition:opacity .22s, transform .22s; max-width:86vw; text-align:center; }
+#sa-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+<style>/* ===== 答案之书 · 翻书版：摊开双页 / 右下掀起 / 连续多页翻动 ===== */
+.ab-panel { position:fixed; inset:0; z-index:7000; display:none; background:#e8e1d4; }
+.ab-panel.show { display:block; }
+.ab-paper { position:absolute; inset:8px; border-radius:18px; overflow:hidden;
+  background:radial-gradient(120% 85% at 50% 0%,#f7f1e5 0%,#eee5d4 62%,#e6dcc7 100%);
+  box-shadow:0 10px 40px rgba(80,55,35,.22); }
+.ab-bg { position:absolute; left:0; right:0; top:34%; text-align:center; pointer-events:none;
+  opacity:.07; font:italic 700 38px/1 Georgia,'Times New Roman',serif; color:#9a6f4a; letter-spacing:1px; }
+.ab-bg small { display:block; font:600 11px/1 Georgia,serif; letter-spacing:6px; margin-top:10px; }
+.ab-content { position:relative; z-index:2; height:100%; box-sizing:border-box; display:flex; flex-direction:column;
+  padding:14px 12px calc(16px + env(safe-area-inset-bottom));
+  overflow-y:auto; -webkit-overflow-scrolling:touch; }
+.ab-topbar { display:flex; align-items:flex-start; gap:10px; flex:0 0 auto; min-height:44px; }
+.ab-x { flex:0 0 auto; width:34px; height:34px; border-radius:50%; border:1px solid #c8b79c;
+  background:rgba(255,255,255,.7); color:#7a5a3c; font-size:16px; cursor:pointer; line-height:1; }
+.ab-x:active { transform:scale(.94); }
+.ab-topbar .ab-tt { flex:1; text-align:center; }
+.ab-title { font:600 17px/1.3 'KaiTi','STKaiti',serif; color:#6b4a30; letter-spacing:2px; }
+.ab-sub { font:400 10.5px/1.4 -apple-system,sans-serif; color:#a08c72; letter-spacing:.6px; margin-top:3px; }
+.ab-topbar .ab-right { flex:0 0 auto; width:34px; }
+
+.ab-bookwrap { flex:1; min-height:268px; display:flex; align-items:center; justify-content:center; padding:8px 0; }
+.ab-stage { position:relative; width:min(94vw,382px); height:min(50vh,400px); min-height:268px;
+  perspective:1700px; -webkit-perspective:1700px; filter:drop-shadow(0 12px 20px rgba(85,58,30,.26)); }
+/* 右侧未翻的纸叠：一层层纸边，制造厚度 */
+.ab-papers { position:absolute; right:0; top:2px; bottom:2px; width:50%; z-index:0; pointer-events:none; }
+.ab-papers i { position:absolute; inset:0; border:1px solid #d6c39f; border-radius:2px 9px 9px 2px;
+  background:repeating-linear-gradient(0deg,#f6efdf 0 3px,#f1e8d4 3px 4px); }
+.ab-papers i:nth-child(1){ transform:translate(2px,2px); }
+.ab-papers i:nth-child(2){ transform:translate(4px,4px); }
+.ab-papers i:nth-child(3){ transform:translate(6px,6px); }
+.ab-papers i:nth-child(4){ transform:translate(8px,8px); background:#eadfc8; }
+.ab-stage.flipping .ab-papers i:nth-child(1){ animation:abPaperLift 1.05s ease-out both; }
+@keyframes abPaperLift { 0%{transform:translate(2px,2px)} 35%{transform:translate(2px,-3px)} 100%{transform:translate(2px,2px)} }
+
+/* 左右静止页 */
+.ab-page { box-sizing:border-box; display:flex; flex-direction:column; align-items:center; text-align:center;
+  padding:20px 13px 15px; overflow:hidden;
+  background:
+    repeating-linear-gradient(0deg,rgba(150,120,80,.032) 0 1px,transparent 1px 4px),
+    #fbf6ea; }
+.ab-page::before { content:''; position:absolute; inset:8px; border:1px solid rgba(190,160,115,.4);
+  border-radius:5px; pointer-events:none; }
+.ab-leaf { position:absolute; top:0; bottom:0; width:50%; z-index:2; border:1px solid #d3bf9c; }
+.ab-leaf.left { left:0; border-radius:9px 2px 2px 9px;
+  box-shadow:inset -15px 0 18px -15px rgba(70,45,20,.5); }
+.ab-leaf.right { right:0; border-radius:2px 9px 9px 2px;
+  box-shadow:inset 15px 0 18px -15px rgba(70,45,20,.42); }
+.ab-leaf.cover,.ab-side.cover { background:linear-gradient(145deg,#8b6a49,#6f5136 70%,#5d422d); border-color:#5d4229; }
+.ab-leaf.cover::before,.ab-side.cover::before { border-color:rgba(240,215,170,.34); }
+.ab-side.cover { border:1px solid #5d4229; border-radius:2px 9px 9px 2px; }
+.ab-spine { position:absolute; left:50%; top:0; bottom:0; width:18px; transform:translateX(-50%); z-index:7;
+  pointer-events:none; background:linear-gradient(90deg,rgba(80,55,30,0),rgba(80,55,30,.26) 48%,rgba(80,55,30,0)); }
+
+/* 飞页：绕书脊(left center)从右往左翻，右下角先掀起 */
+.ab-flywrap { position:absolute; inset:0; z-index:5; pointer-events:none; }
+.ab-fly { position:absolute; left:50%; top:0; width:50%; height:100%;
+  transform-origin:left center; -webkit-transform-origin:left center;
+  transform-style:preserve-3d; -webkit-transform-style:preserve-3d; will-change:transform;
+  animation:abPageTurn var(--dur,660ms) cubic-bezier(.34,.03,.2,1) var(--delay,0ms) both; }
+.ab-fly.rev { animation-name:abPageTurnRev; }
+.ab-side { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+.ab-fside { z-index:2; box-shadow:inset 13px 0 16px -13px rgba(70,45,20,.4); }
+.ab-bside { transform:rotateY(180deg); box-shadow:inset -13px 0 16px -13px rgba(70,45,20,.45); }
+/* 右下角被掀起的卷角高光，随该张纸的动画同步闪一下 */
+.ab-fside::after { content:''; position:absolute; right:0; bottom:0; width:78%; height:64%;
+  pointer-events:none; opacity:0; border-radius:0 0 9px 0;
+  background:radial-gradient(circle at 100% 100%,rgba(255,252,235,.95),rgba(255,238,200,.32) 40%,rgba(255,238,200,0) 72%);
+  animation:abCurl var(--dur,660ms) ease-in-out var(--delay,0ms) both; }
+@keyframes abCurl { 0%{opacity:0} 22%{opacity:.85} 55%{opacity:.4} 100%{opacity:0} }
+@keyframes abPageTurn {
+  0%   { transform:rotateY(0deg)     rotateX(0deg)   translateY(0)     skewY(0deg); }
+  18%  { transform:rotateY(-26deg)   rotateX(12deg)  translateY(-11px) skewY(-2deg); }
+  46%  { transform:rotateY(-92deg)   rotateX(6deg)   translateY(-16px) skewY(-1deg); }
+  78%  { transform:rotateY(-154deg)  rotateX(2deg)   translateY(-8px)  skewY(0deg); }
+  100% { transform:rotateY(-180deg)  rotateX(0deg)   translateY(0)     skewY(0deg); }
+}
+@keyframes abPageTurnRev {
+  0%   { transform:rotateY(-180deg) rotateX(0deg)  translateY(0)     skewY(0deg); }
+  20%  { transform:rotateY(-154deg) rotateX(2deg)  translateY(-8px)  skewY(1deg); }
+  55%  { transform:rotateY(-92deg)  rotateX(6deg)  translateY(-16px) skewY(1deg); }
+  82%  { transform:rotateY(-28deg)  rotateX(11deg) translateY(-10px) skewY(2deg); }
+  100% { transform:rotateY(0deg)    rotateX(0deg)  translateY(0)     skewY(0deg); }
+}
+/* 整本书翻动时扫过的一道纸光 */
+.ab-flash { position:absolute; inset:0; z-index:8; pointer-events:none; opacity:0; border-radius:9px;
+  background:linear-gradient(115deg,rgba(255,255,255,0) 35%,rgba(255,250,230,.42) 52%,rgba(255,255,255,0) 68%); }
+.ab-stage.flipping .ab-flash { animation:abFlash 1.1s ease-in-out both; }
+@keyframes abFlash { 0%{opacity:0} 40%{opacity:.8} 100%{opacity:0} }
+
+/* 书页里的排版 */
+.ab-kicker { font:600 8.5px/1 Georgia,serif; letter-spacing:2.4px; color:#b39a78; position:relative; white-space:nowrap; }
+.ab-answer { flex:1; display:flex; align-items:center; justify-content:center; position:relative;
+  font:600 19px/1.85 'KaiTi','STKaiti',serif; color:#6b4a30; letter-spacing:.5px;
+  padding:0 2px; word-break:break-word; }
+.ab-answer.small { font-size:17px; }
+.ab-answer.tiny { font-size:15px; line-height:1.75; }
+.ab-orn { position:relative; font-size:10px; color:#c9ad84; margin-bottom:10px; letter-spacing:4px; }
+.ab-folio { position:relative; font:italic 11px/1 Georgia,serif; color:#b39a78; letter-spacing:1px; }
+.ab-lines { flex:1; width:100%; display:flex; flex-direction:column; justify-content:center; gap:11px; padding:0 4px; }
+.ab-lines i { display:block; height:1px; background:rgba(165,135,95,.22); }
+.ab-lines i:nth-child(2){ width:82% } .ab-lines i:nth-child(4){ width:74% } .ab-lines i:nth-child(5){ width:90% }
+.ab-next-tip { position:relative; font:400 10.5px/1.8 'KaiTi','STKaiti',serif; color:#a8916f; margin-bottom:12px; }
+.ab-fside .ab-kicker,.ab-fside .ab-orn,.ab-fside .ab-folio { opacity:.55; }
+.ab-cover-mark { position:relative; margin-top:12%; font-size:18px; color:#e8d4ae; letter-spacing:8px; }
+.ab-cover-title { position:relative; margin-top:15%; font:600 26px/1.4 'KaiTi','STKaiti',serif;
+  color:#f6e7c9; letter-spacing:4px; }
+.ab-cover-en { position:relative; margin-top:9px; font:italic 700 9px/1 Georgia,serif;
+  color:#dcc39b; letter-spacing:1.5px; }
+.ab-cover-rule { position:relative; width:46px; height:1px; background:rgba(240,215,170,.5); margin:20px 0 12px; }
+.ab-cover-tip { position:relative; font:400 11px/1.9 'KaiTi','STKaiti',serif; color:#e2cda9; }
+.ab-cover-foot { position:relative; margin-top:auto; font:600 7.5px/1 Georgia,serif;
+  letter-spacing:3px; color:#c9ac82; }
+.ab-inner-mark { position:relative; margin-top:16%; font-size:15px; color:#c2a67e; letter-spacing:6px; }
+.ab-inner-txt { position:relative; margin-top:22%; font:400 12px/2.1 'KaiTi','STKaiti',serif; color:#8a7159; }
+.ab-inner-foot { position:relative; margin-top:auto; font:600 7.5px/1 Georgia,serif; letter-spacing:3px; color:#b9a181; }
+
+.ab-controls { flex:0 0 auto; padding:4px 2px 2px; }
+.ab-tip { text-align:center; font:400 11.5px/1.7 'KaiTi','STKaiti',serif; color:#8a7159; margin-bottom:10px; min-height:20px; }
+.ab-row { display:flex; align-items:center; gap:7px; }
+.ab-num { flex:1; min-width:0; box-sizing:border-box; border:1px solid #d8c7ab; border-radius:999px;
+  background:#fffcf5; padding:11px 12px; font:600 15px/1 'KaiTi','STKaiti',serif; color:#6b4a30;
+  text-align:center; outline:none; letter-spacing:1px; }
+.ab-num:focus { border-color:#b98c5e; box-shadow:0 0 0 3px rgba(185,140,94,.14); }
+.ab-num::-webkit-outer-spin-button,.ab-num::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+.ab-go { flex:0 0 auto; border:none; border-radius:999px; background:#8b6a49; color:#fff8ec;
+  font:600 14px/1 'KaiTi','STKaiti',serif; letter-spacing:2px; padding:12px 18px; cursor:pointer;
+  box-shadow:0 4px 14px rgba(120,90,55,.22); }
+.ab-go:active { transform:scale(.97); }
+.ab-nav { flex:0 0 auto; width:38px; height:38px; border-radius:50%; border:1px solid #d8c7ab;
+  background:#fffcf5; color:#7a5a3c; font-size:19px; cursor:pointer; line-height:1; }
+.ab-nav:active { transform:scale(.94); }
+.ab-go:disabled,.ab-nav:disabled,.ab-num:disabled { opacity:.5; }
+.ab-extra { display:flex; justify-content:center; gap:10px; margin-top:12px; }
+.ab-mini { border:1px solid #d8c7ab; border-radius:999px; background:#fffdf7; color:#7a5a3c;
+  font-size:11.5px; padding:7px 14px; cursor:pointer; font-family:inherit; }
+.ab-mini:active { transform:scale(.96); }
+@media (max-height:640px){ .ab-bookwrap{ min-height:240px; } .ab-stage{ height:44vh; min-height:240px; } }
+
+/* ===== 内容合集版新增：套别切换 / 语态 / 来源说明 ===== */
+.ab-sets { flex:0 0 auto; display:flex; gap:6px; justify-content:center; margin:2px 0 8px; }
+.ab-set { flex:0 0 auto; border:1px solid #d8c7ab; background:#fffdf7; color:#8a7159;
+  font:600 11px/1 -apple-system,sans-serif; padding:7px 11px; border-radius:999px; cursor:pointer;
+  font-family:inherit; transition:background .2s,color .2s; }
+.ab-set.active { background:#8b6a49; border-color:#8b6a49; color:#fff8ec; }
+.ab-set:active { transform:scale(.96); }
+.ab-src-line { flex:0 0 auto; text-align:center; margin:-2px 0 8px; }
+.ab-src-line button { border:none; background:none; color:#a08c72; font:400 10.5px/1.5 -apple-system,sans-serif;
+  text-decoration:underline; text-underline-offset:2px; cursor:pointer; padding:2px 4px; font-family:inherit; }
+.ab-mood { position:relative; display:inline-block; font:600 10px/1 -apple-system,sans-serif;
+  padding:4px 10px; border-radius:999px; margin-bottom:10px; letter-spacing:1px; }
+.ab-mood.pos { background:#e7f3e4; color:#558a4b; }
+.ab-mood.neu { background:#eef1f5; color:#64748c; }
+.ab-mood.neg { background:#fbe7e7; color:#b55656; }
+.ab-subtext { position:relative; font:400 11.5px/1.8 'KaiTi','STKaiti',serif; color:#9a8366;
+  margin-top:-6px; margin-bottom:10px; padding:0 4px; }
+.ab-trunc { position:relative; font:400 10px/1.6 -apple-system,sans-serif; color:#b58a72; margin-bottom:10px; }
+.ab-mask { position:fixed; inset:0; z-index:7200; display:none; align-items:center; justify-content:center;
+  background:rgba(60,42,25,.5); padding:22px; }
+.ab-mask.show { display:flex; }
+.ab-dialog { width:100%; max-width:380px; max-height:76vh; overflow-y:auto; -webkit-overflow-scrolling:touch;
+  background:#fbf6ea; border:1px solid #d8c7ab; border-radius:16px; padding:18px 18px 16px;
+  box-shadow:0 14px 40px rgba(60,40,20,.3); }
+.ab-dialog h3 { font:600 15px/1.5 'KaiTi','STKaiti',serif; color:#6b4a30; letter-spacing:1px;
+  margin:0 0 8px; display:flex; justify-content:space-between; align-items:center; }
+.ab-dialog h3 span { font:400 11px/1 -apple-system,sans-serif; color:#a08c72; cursor:pointer; }
+.ab-dialog h4 { font:600 12px/1.5 -apple-system,sans-serif; color:#8a7159; margin:14px 0 6px; }
+.ab-dialog ol,.ab-dialog ul { padding-left:18px; margin:0; }
+.ab-dialog li { font:400 12px/1.85 -apple-system,sans-serif; color:#7a6650; margin-bottom:5px; word-break:break-all; }
+.ab-dialog .ab-dnotice { font:400 11px/1.75 -apple-system,sans-serif; color:#a08c72;
+  background:#f3ead8; border-radius:9px; padding:9px 11px; margin:10px 0 0; }
+</style>
+</head>
+<body>
+<div id="sa-mask"><div id="sa-box"><div id="sa-title"></div><input id="sa-input" autocomplete="off"><div id="sa-btns"><button id="sa-cancel">取消</button><button id="sa-ok">确定</button></div></div></div>
+<div id="sa-toast"></div>
+<div id="crl-page" class="crl-page" style="display:none;">
+    <div class="crl-panel">
+        <div class="crl-title">
+            <span id="crl-title-text">卡牌内容库</span>
+            <span class="crl-total" id="crl-total"></span>
+        </div>
+        <div class="crl-tabs" id="crl-tabs">
+            <button class="crl-tab-btn" data-tab="cards">字卡</button>
+            <button class="crl-tab-btn" data-tab="emoji">Emoji</button>
+            <button class="crl-tab-btn" data-tab="dict">词典</button>
+            <button class="crl-tab-btn active" data-tab="paper">卡牌</button>
+        </div>
+        <div class="crl-toolbar">
+            <input class="crl-search" id="crl-search" placeholder="搜索卡牌词 / 释义 / 分组…">
+            <button class="crl-tool-btn" id="crl-btn-dedup" title="一键去重">去重</button>
+            <button class="crl-tool-btn" id="crl-group-btn" title="新建分组">＋ 新建分组</button>
+            <button class="crl-tool-btn" id="crl-btn-import" title="批量导入">导入</button>
+            <button class="crl-tool-btn" id="crl-btn-export" title="导出">导出</button>
+            <button class="crl-tool-btn" id="crl-btn-reset" title="恢复内置卡牌">恢复</button>
+        </div>
+        <div class="crl-body" id="crl-body"></div>
+        <div class="crl-footer">
+            <button class="crl-btn crl-btn-primary" id="crl-add-btn">＋ 新增卡牌</button>
+            <button class="crl-btn crl-btn-secondary" id="crl-close-btn">关闭</button>
+        </div>
+    </div>
+</div>
+
+<input type="file" id="crl-import-input" accept=".json,.txt,application/json,text/plain" style="display:none;">
+
+<!-- 更换牌堆内容 · 分组来源选择 -->
+
+<div id="pc-src-mask" class="pc-deck-mask">
+  <div class="pc-deck-dialog">
+    <div class="pc-deck-title">更换牌堆内容</div>
+    <label>选择本次牌堆从哪些分组抽取（被禁用的分组不可选）</label>
+    <div class="pc-src-quick">
+      <button class="pcdl-mini" onclick="pcSrcToggleAll(true)">全选</button>
+      <button class="pcdl-mini" onclick="pcSrcToggleAll(false)">全不选</button>
+      <button class="pcdl-mini" onclick="pcSrcRandom()">随机换一批</button>
+    </div>
+    <div class="pc-src-list" id="pc-src-list"></div>
+    <label>牌堆张数</label>
+    <input id="pc-src-count" type="number" min="6" max="200" step="1" value="100">
+    <div class="pc-deck-btns">
+      <button class="cancel" onclick="pcSrcClose()">取消</button>
+      <button class="ok" onclick="pcSrcApply()">更换牌堆</button>
+    </div>
+  </div>
+</div>
+
+<!-- 卡牌内容库 · 批量导入 -->
+<div id="pc-batch-mask" class="pc-deck-mask">
+  <div class="pc-deck-dialog">
+    <div class="pc-deck-title">批量导入卡牌</div>
+    <label>每行一张：卡面词 | 牌背释义 | 分组（后两项可省略）</label>
+    <textarea id="pcb-text" rows="8" placeholder="想你&#10;青 | 清冷、成长、生机 | 颜色卡&#10;抱抱 |  | 肢体动作卡"></textarea>
+    <label>默认分组（行内未填分组时用）</label>
+    <input id="pcb-g" placeholder="我的卡牌" autocomplete="off">
+    <div class="pc-deck-btns">
+      <button class="cancel" onclick="pcDeckBatchClose()">取消</button>
+      <button class="ok" onclick="pcDeckBatchSave()">导入</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="pc-panel" class="pc-panel">
+  <div class="pc-paper">
+    <svg class="pc-wave" viewBox="0 0 400 800" preserveAspectRatio="none" aria-hidden="true">
+      <path id="pc-wave-path" fill="none" stroke="#8a5f3d" stroke-width="1.6" vector-effect="non-scaling-stroke" d=""></path>
+    </svg>
+    <div class="pc-paw tl" id="pc-paw-tl"></div>
+    <div class="pc-paw tr" id="pc-paw-tr"></div>
+    <div class="pc-watermark">
+      <div class="pc-wm1">Cat's</div>
+      <div class="pc-wm2">Inner Voice</div>
+      <div class="pc-wm3">TAROT</div>
+      <div class="pc-cat" id="pc-wm-cat"></div>
+    </div>
+    <div class="pc-fan" id="pc-fan"></div>
+
+    <div class="pc-content" id="pc-content">
+      <!-- 模式选择 -->
+      <div class="pc-home" id="pc-home">
+        <div class="pc-topbar">
+          <button class="pc-x" onclick="closePaperCard()" title="关闭">✕</button>
+          <div class="pc-tt"><div class="pc-title">卡片传讯字卡</div><div class="pc-sub">CAT'S INNER VOICE · 手写白卡 · 独立卡库</div></div>
+          <div class="pc-right"></div>
+        </div>
+        <div class="pc-lead">洗牌，凭感应抽卡。<br>抽到几张，就按顺序拼成一句他要说的话。</div>
+        <button class="pc-mode-btn" onclick="pcDemoOpen()">
+          <div class="pc-mode-h"><span class="pc-mode-ico">💬</span><span class="pc-mode-name">卡片回复演示</span><span class="pc-mode-arrow">›</span></div>
+          <div class="pc-mode-desc">输入一个问题，TA 按设定延迟抽 1~8 张白卡，在本页以卡片消息回复。</div>
+          <span class="pc-mode-state on" id="pc-chat-state">独立版 · 页面内演示</span>
+        </button>
+        <button class="pc-mode-btn" onclick="pcOpenDrawHome()">
+          <div class="pc-mode-h"><span class="pc-mode-ico">🃏</span><span class="pc-mode-name">抽卡模式</span><span class="pc-mode-arrow">›</span></div>
+          <div class="pc-mode-desc">单独页面回答内心的疑问：随机抽牌 / 底部展牌抽卡 / 卡片回复。</div>
+        </button>
+        <button class="pc-mode-btn" onclick="pcOpenDeckLibrary()">
+          <div class="pc-mode-h"><span class="pc-mode-ico">📚</span><span class="pc-mode-name">卡牌内容库</span><span class="pc-mode-arrow">›</span></div>
+          <div class="pc-mode-desc">内置 563 张手写白卡，可增删改查、搜索、试抽。仅用于抽牌，独立保存。</div>
+          <span class="pc-mode-state" id="pc-deck-count">—</span>
+        </button>
+
+        <button class="pc-mode-btn" onclick="openAnswerBook()">
+          <div class="pc-mode-h"><span class="pc-mode-ico">📖</span><span class="pc-mode-name">答案之书</span><span class="pc-mode-arrow">›</span></div>
+          <div class="pc-mode-desc">心里默念一个问题，输入一个数字，书页哗啦翻过去，停在那一页看答案。</div>
+          <span class="pc-mode-state on" id="ab-entry-state">A 套 · 共 376 条 · 连续翻书动画</span>
+        </button>
+        <div class="pc-probs">
+          <div class="pc-probs-h"><span>抽取张数概率（1~8 张）</span><small id="pc-prob-sum"></small></div>
+          <div class="pc-probs-grid" id="pc-probs-grid"></div>
+          <div class="pc-probs-btns">
+            <button class="pc-mini-btn" onclick="pcRandomizeProbs()">随机打乱概率</button>
+            <label class="pc-switch"><input type="checkbox" id="pc-auto-prob" checked>每次自动打乱</label>
+          </div>
+        </div>
+        <div class="pc-tempo">
+          <div class="pc-probs-h"><span>时间与速度</span><small>自由控制发送节奏</small></div>
+          <div class="pc-tempo-grid" id="pc-tempo-grid"></div>
+          <div class="pc-tempo-note">联系人发牌延迟 = 你发问后，隔多久才收到卡片回复；洗牌等待 = 点抽牌后先洗牌再出结果；翻牌间隔 = 卡片一张张揭开的快慢。</div>
+        </div>
+      </div>
+
+      <!-- 抽卡模式 -->
+      <div class="pc-draw" id="pc-draw" style="display:none;">
+        <div class="pc-topbar">
+          <button class="pc-x" onclick="pcBackHome()" title="返回">←</button>
+          <div class="pc-tt"><div class="pc-title">抽卡模式</div><div class="pc-sub">随机抽牌 · 展牌抽卡 · 卡片回复</div></div>
+          <button class="pc-x" onclick="closePaperCard()" title="关闭">✕</button>
+        </div>
+        <div class="pc-draw-tabs">
+          <button class="pc-tab active" data-pc-tab="random" onclick="pcSwitchTab('random')">① 随机抽牌</button>
+          <button class="pc-tab" data-pc-tab="spread" onclick="pcSwitchTab('spread')">② 展牌抽卡</button>
+          <button class="pc-tab" data-pc-tab="demo" onclick="pcSwitchTab('demo')">③ 卡片回复</button>
+        </div>
+
+        <div class="pc-tab-body" id="pc-body-random">
+          <textarea class="pc-question" id="pc-question" rows="2" placeholder="在心里默念你的疑问…（可不填）"></textarea>
+          <button class="pc-go" onclick="pcRandomDraw()">洗 牌 · 抽 牌</button>
+          <div class="pc-result" id="pc-result"></div>
+        </div>
+
+        <div class="pc-tab-body" id="pc-body-spread" style="display:none;">
+          <div class="pc-board-bar">
+            <span class="pc-board-title">自由牌桌 <span id="pc-board-count">0 张</span></span>
+            <button class="pc-mini-btn" onclick="pcSpreadReset()">↻ 洗牌</button>
+            <button class="pc-mini-btn" onclick="pcSrcOpen()">⇄ 换牌堆</button>
+            <button class="pc-mini-btn" onclick="pcSpreadClear()">收回全部</button>
+          </div>
+          <div class="pc-board" id="pc-board">
+            <div class="pc-board-mat"></div>
+            <div class="pc-board-hint" id="pc-board-hint">从下方牌堆直接把牌拖上来<br>放在任意位置 · 点牌翻面</div>
+            <div class="pc-shuffle-veil" id="pc-shuffle-veil"><span>✦ 正在洗牌…</span></div>
+          </div>
+        </div>
+
+        <div class="pc-tab-body" id="pc-body-demo" style="display:none;">
+          <div class="pc-demo-tip">写下想问的话，TA 会按「时间与速度」里设的延迟，用白卡回复你。</div>
+          <div class="pc-demo-log" id="pc-demo-log"><div class="pc-demo-empty">还没有对话<br>写下第一句话吧</div></div>
+          <div class="pc-demo-input">
+            <input id="pc-demo-q" placeholder="想问什么…" autocomplete="off">
+            <button onclick="pcDemoSend()">发送</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部牌滑动区：参考图底部扇形牌堆，仅展牌页显示 -->
+    <div class="pc-fan-slider" id="pc-fan-slider" style="display:none;">
+      <div class="pc-fan-label" id="pc-fan-label">← 左右滑动牌堆　·　按住牌直接拖到上方任意位置 →</div>
+      <div class="pc-spread-rail" id="pc-spread-rail"></div>
+    </div>
+  </div>
+</div>
+
+
+<div id="pc-deck-mask" class="pc-deck-mask">
+  <div class="pc-deck-dialog">
+    <div class="pc-deck-title" id="pcd-title">新增卡牌</div>
+    <label>卡面词（一张只写一个词）</label>
+    <input id="pcd-f" placeholder="如：想你 / 青 / 抱抱" autocomplete="off">
+    <label>所属分组</label>
+    <input id="pcd-g" list="pcd-glist" placeholder="可选已有分组，也可输入新分组" autocomplete="off">
+    <datalist id="pcd-glist"></datalist>
+    <label>牌背释义（可留空，颜色卡等用）</label>
+    <input id="pcd-b" placeholder="如：安慰、治愈、平和" autocomplete="off">
+    <div class="pc-deck-btns">
+      <button class="cancel" onclick="pcDeckCloseEditor()">取消</button>
+      <button class="ok" onclick="pcDeckSave()">保存</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ===== 独立版兼容层：原站依赖就地实现，不改动卡牌模块本体 ===== */
+var appData = null;
+function debouncedSaveData() {}
+function hydrateIcons() {}
+function triggerRoleReplyForRole() {}
+function appendMessageToDOM() {}
+function incrementUnread() {}
+var currentRoleId = null;
+var __saToastT = null;
+function showToast(msg) {
+    var t = document.getElementById('sa-toast'); if (!t) return;
+    t.textContent = String(msg || ''); t.classList.add('show');
+    clearTimeout(__saToastT); __saToastT = setTimeout(function () { t.classList.remove('show'); }, 2000);
+}
+function __saDialog(title, isInput, cb) {
+    var m = document.getElementById('sa-mask');
+    document.getElementById('sa-title').textContent = title;
+    var inp = document.getElementById('sa-input');
+    inp.style.display = isInput ? 'block' : 'none'; inp.value = '';
+    m.classList.add('show');
+    document.getElementById('sa-ok').onclick = function () { m.classList.remove('show'); cb(isInput ? inp.value : true); };
+    document.getElementById('sa-cancel').onclick = function () { m.classList.remove('show'); };
+    if (isInput) setTimeout(function () { inp.focus(); }, 60);
+}
+function showConfirm(msg, cb) { __saDialog(msg, false, function () { cb(); }); }
+function showPrompt(title, def, cb, ph) {
+    __saDialog(title, true, function (v) { cb(v); });
+    var i = document.getElementById('sa-input'); i.value = def || ''; if (ph) i.placeholder = ph;
+}
+window.__crlClearQ = function () { var s = document.getElementById('crl-search'); if (s) s.value = ''; };
+</script>
+
+<script>
+/* ==================== 卡片传讯字卡 · 独立模块 v2 ====================
+   内置卡面词库 563 张 / 23 组；用户可在「卡牌内容库」增删改查。
+   卡牌数据完全独立：不写入字卡库 BUILTIN、不进入抽卡池、不参与拼词组句。
+   ============================================================ */
+(function () {
+    'use strict';
+
+    const PAPER_DECK = [{"n":1,"name":"暗号确认卡","hint":"确认梦角在不在，约占总量6%；可手绘一张本人简笔形象作专属连接牌","cards":[{"f":"嗨","b":""},{"f":"是我","b":""},{"f":"我在","b":""},{"f":"在的","b":""},{"f":"听到了","b":""},{"f":"嗯","b":""},{"f":"收到","b":""},{"f":"我在呢","b":""},{"f":"连上了","b":""},{"f":"别担心","b":""},{"f":"你说，我听着","b":""},{"f":"（手绘本人简笔形象）","b":""},{"f":"在听","b":""},{"f":"我来了","b":""},{"f":"别怀疑","b":""},{"f":"是真的","b":""},{"f":"收到你的消息","b":""},{"f":"连着你","b":""},{"f":"我一直都在","b":""},{"f":"你继续说","b":""}]},{"n":2,"name":"称呼卡","hint":"人称与称呼，可按人设替换","cards":[{"f":"宝宝","b":""},{"f":"宝贝","b":""},{"f":"亲爱的","b":""},{"f":"老婆","b":""},{"f":"老公","b":""},{"f":"哥哥","b":""},{"f":"姐姐","b":""},{"f":"你","b":""},{"f":"我","b":""},{"f":"我们","b":""},{"f":"爱人","b":""},{"f":"先生","b":""},{"f":"小家伙","b":""},{"f":"乖乖","b":""},{"f":"心上人","b":""},{"f":"家人","b":""}]},{"n":3,"name":"是非问答卡","hint":"配合决策币或抽卡判断","cards":[{"f":"是","b":""},{"f":"不是","b":""},{"f":"想","b":""},{"f":"不想","b":""},{"f":"喜欢","b":""},{"f":"讨厌","b":""},{"f":"可以","b":""},{"f":"不行","b":""},{"f":"有","b":""},{"f":"没有","b":""},{"f":"对","b":""},{"f":"错","b":""},{"f":"在","b":""},{"f":"不在","b":""},{"f":"愿意","b":""},{"f":"不愿意","b":""},{"f":"好","b":""},{"f":"不好","b":""},{"f":"记得","b":""},{"f":"忘了","b":""},{"f":"能","b":""},{"f":"不能","b":""},{"f":"会","b":""},{"f":"不会","b":""},{"f":"要","b":""},{"f":"不要","b":""},{"f":"行","b":""},{"f":"真的","b":""},{"f":"假的","b":""},{"f":"值得","b":""}]},{"n":4,"name":"情绪心情卡","hint":"当下状态与情绪","cards":[{"f":"开心","b":""},{"f":"心动","b":""},{"f":"想你","b":""},{"f":"想念","b":""},{"f":"期待","b":""},{"f":"安心","b":""},{"f":"安稳","b":""},{"f":"满足","b":""},{"f":"雀跃","b":""},{"f":"兴奋","b":""},{"f":"温柔","b":""},{"f":"害羞","b":""},{"f":"羞涩","b":""},{"f":"撒娇","b":""},{"f":"别扭","b":""},{"f":"依赖","b":""},{"f":"牵挂","b":""},{"f":"笃定","b":""},{"f":"平静","b":""},{"f":"释然","b":""},{"f":"委屈","b":""},{"f":"委屈巴巴","b":""},{"f":"吃醋","b":""},{"f":"生气","b":""},{"f":"烦躁","b":""},{"f":"不安","b":""},{"f":"紧张","b":""},{"f":"警惕","b":""},{"f":"愧疚","b":""},{"f":"后悔","b":""},{"f":"心疼","b":""},{"f":"失落","b":""},{"f":"难过","b":""},{"f":"孤单","b":""},{"f":"闷闷的","b":""},{"f":"累","b":""},{"f":"疲惫","b":""},{"f":"暖洋洋","b":""},{"f":"放松","b":""},{"f":"怀念","b":""},{"f":"困倦","b":""},{"f":"认真","b":""},{"f":"松弛","b":""}]},{"n":5,"name":"颜色卡","hint":"颜色可对应形容词/元素，释义写卡背或自行解读","cards":[{"f":"白","b":"纯洁、单纯、无辜"},{"f":"红","b":"冲动、热情、行动、火元素"},{"f":"橙","b":"温暖、活力、明朗"},{"f":"黄","b":"明媚、明亮、高兴、土元素"},{"f":"绿","b":"安慰、治愈、平和"},{"f":"青","b":"清冷、成长、生机"},{"f":"蓝","b":"理性、冷静、开阔"},{"f":"紫","b":"神秘、偏爱、浪漫"},{"f":"粉","b":"温柔、喜欢、甜美"},{"f":"黑","b":"内敛、压抑、深沉"},{"f":"灰","b":"低落、淡然、观望"},{"f":"棕","b":"踏实、安稳、朴素"},{"f":"金","b":"珍贵、明亮、贵重"},{"f":"银","b":"清冷、安静、干净"},{"f":"藏青","b":"克制、稳重、距离感"},{"f":"米色","b":"柔和、亲近、日常"}]},{"n":6,"name":"数字卡","hint":"数量 / 排序 / 程度","cards":[{"f":"0","b":""},{"f":"1","b":""},{"f":"2","b":""},{"f":"3","b":""},{"f":"4","b":""},{"f":"5","b":""},{"f":"6","b":""},{"f":"7","b":""},{"f":"8","b":""},{"f":"9","b":""},{"f":"10","b":""},{"f":"11","b":""},{"f":"12","b":""}]},{"n":7,"name":"肢体动作卡","hint":"可与颜色、数字组合，如绿色抱抱=安慰的抱抱","cards":[{"f":"抱抱","b":""},{"f":"亲亲","b":""},{"f":"牵手","b":""},{"f":"摸头","b":""},{"f":"靠近","b":""},{"f":"拥抱","b":""},{"f":"亲吻","b":""},{"f":"揉头发","b":""},{"f":"看着你","b":""},{"f":"笑","b":""},{"f":"靠过来","b":""},{"f":"牵住手","b":""},{"f":"拍一拍","b":""},{"f":"发呆","b":""},{"f":"递东西","b":""},{"f":"拉手","b":""},{"f":"贴贴","b":""},{"f":"蹭一蹭","b":""},{"f":"捏脸","b":""},{"f":"揉肩","b":""},{"f":"盖毯子","b":""},{"f":"递水","b":""},{"f":"整理衣领","b":""},{"f":"挡在身前","b":""},{"f":"回头望","b":""},{"f":"挥手","b":""},{"f":"挽手臂","b":""},{"f":"十指相扣","b":""},{"f":"摸脸颊","b":""},{"f":"握着手","b":""}]},{"n":8,"name":"事件场景卡","hint":"正在做的事 / 所处场景","cards":[{"f":"吃饭","b":""},{"f":"睡觉","b":""},{"f":"工作","b":""},{"f":"学习","b":""},{"f":"出差","b":""},{"f":"见面","b":""},{"f":"散步","b":""},{"f":"听歌","b":""},{"f":"看电影","b":""},{"f":"逛街","b":""},{"f":"想事情","b":""},{"f":"休息","b":""},{"f":"赶路","b":""},{"f":"等你","b":""},{"f":"写信","b":""},{"f":"发呆","b":""},{"f":"喝咖啡","b":""},{"f":"看书","b":""},{"f":"通勤","b":""},{"f":"健身","b":""},{"f":"做饭","b":""},{"f":"逛超市","b":""},{"f":"拍照","b":""},{"f":"打游戏","b":""},{"f":"看雨","b":""},{"f":"晒太阳","b":""},{"f":"收拾房间","b":""},{"f":"加班","b":""},{"f":"失眠","b":""},{"f":"做梦","b":""}]},{"n":9,"name":"时间卡","hint":"时间线索","cards":[{"f":"早上","b":""},{"f":"中午","b":""},{"f":"下午","b":""},{"f":"傍晚","b":""},{"f":"晚上","b":""},{"f":"深夜","b":""},{"f":"凌晨","b":""},{"f":"现在","b":""},{"f":"今天","b":""},{"f":"明天","b":""},{"f":"昨天","b":""},{"f":"以后","b":""},{"f":"刚才","b":""},{"f":"最近","b":""},{"f":"一直","b":""},{"f":"很快","b":""},{"f":"清晨","b":""},{"f":"黄昏","b":""},{"f":"午后","b":""},{"f":"夜里","b":""},{"f":"周末","b":""},{"f":"月底","b":""},{"f":"很久","b":""},{"f":"此刻","b":""}]},{"n":10,"name":"地点方位卡","hint":"位置与方位","cards":[{"f":"家里","b":""},{"f":"外面","b":""},{"f":"左边","b":""},{"f":"右边","b":""},{"f":"上面","b":""},{"f":"附近","b":""},{"f":"远方","b":""},{"f":"身边","b":""},{"f":"街上","b":""},{"f":"房间里","b":""},{"f":"窗边","b":""},{"f":"门口","b":""},{"f":"车里","b":""},{"f":"车站","b":""},{"f":"路口","b":""},{"f":"桥上","b":""},{"f":"海边","b":""},{"f":"山顶","b":""},{"f":"树下","b":""},{"f":"梦里","b":""}]},{"n":11,"name":"行星占星卡","hint":"占星行星对应状态","cards":[{"f":"太阳","b":""},{"f":"月亮","b":""},{"f":"金星","b":""},{"f":"木星","b":""},{"f":"水星","b":""},{"f":"火星","b":""},{"f":"土星","b":""},{"f":"天王星","b":""},{"f":"海王星","b":""},{"f":"冥王星","b":""},{"f":"北交点","b":""}]},{"n":12,"name":"星座卡","hint":"十二星座","cards":[{"f":"白羊","b":""},{"f":"金牛","b":""},{"f":"双子","b":""},{"f":"巨蟹","b":""},{"f":"狮子","b":""},{"f":"处女","b":""},{"f":"天秤","b":""},{"f":"天蝎","b":""},{"f":"射手","b":""},{"f":"摩羯","b":""},{"f":"水瓶","b":""},{"f":"双鱼","b":""}]},{"n":13,"name":"外貌特征卡","hint":"对应梦角形象","cards":[{"f":"头发","b":""},{"f":"眼睛","b":""},{"f":"笑","b":""},{"f":"身高","b":""},{"f":"发色","b":""},{"f":"瞳色","b":""},{"f":"手","b":""},{"f":"侧脸","b":""},{"f":"睫毛","b":""},{"f":"眉毛","b":""},{"f":"嘴唇","b":""},{"f":"鼻梁","b":""},{"f":"下颌线","b":""},{"f":"颈线","b":""},{"f":"指尖","b":""},{"f":"掌心","b":""},{"f":"耳朵","b":""},{"f":"酒窝","b":""},{"f":"背影","b":""},{"f":"声线","b":""}]},{"n":14,"name":"天气环境卡","hint":"氛围与天气","cards":[{"f":"晴","b":""},{"f":"雨","b":""},{"f":"风","b":""},{"f":"雪","b":""},{"f":"冷","b":""},{"f":"暖","b":""},{"f":"安静","b":""},{"f":"热闹","b":""},{"f":"阴天","b":""},{"f":"夜晚","b":""},{"f":"多云","b":""},{"f":"阵雨","b":""},{"f":"大风","b":""},{"f":"初雪","b":""},{"f":"薄雾","b":""},{"f":"晚霞","b":""},{"f":"晨露","b":""},{"f":"降温","b":""},{"f":"回暖","b":""},{"f":"星空","b":""}]},{"n":15,"name":"想说的话","hint":"单字/短词，抽多张再拼语序","cards":[{"f":"爱你","b":""},{"f":"想你","b":""},{"f":"我","b":""},{"f":"你","b":""},{"f":"对不起","b":""},{"f":"谢谢","b":""},{"f":"别走","b":""},{"f":"喜欢你","b":""},{"f":"抱抱我","b":""},{"f":"等你","b":""},{"f":"来找你","b":""},{"f":"不要怕","b":""},{"f":"我在","b":""},{"f":"晚安","b":""},{"f":"早安","b":""},{"f":"想见你","b":""},{"f":"别生气","b":""},{"f":"原谅我","b":""},{"f":"陪伴你","b":""},{"f":"想聊聊","b":""},{"f":"别离开","b":""},{"f":"我想你了","b":""},{"f":"好好照顾自己","b":""},{"f":"我陪着你","b":""},{"f":"慢慢来","b":""},{"f":"别担心","b":""},{"f":"有我呢","b":""},{"f":"我记得","b":""},{"f":"很开心","b":""},{"f":"遇见你","b":""},{"f":"别熬夜","b":""},{"f":"记得吃饭","b":""},{"f":"我好想见你","b":""},{"f":"别难过","b":""},{"f":"我一直都在","b":""},{"f":"等你回来","b":""},{"f":"想抱抱你","b":""},{"f":"你很棒","b":""},{"f":"我爱你","b":""},{"f":"别逞强","b":""}]},{"n":16,"name":"自然意象卡","hint":"自然景物与动物意象，用于氛围解读","cards":[{"f":"山","b":""},{"f":"海","b":""},{"f":"风","b":""},{"f":"月","b":""},{"f":"星","b":""},{"f":"云","b":""},{"f":"雨","b":""},{"f":"雪","b":""},{"f":"花","b":""},{"f":"树","b":""},{"f":"河","b":""},{"f":"湖","b":""},{"f":"森林","b":""},{"f":"夕阳","b":""},{"f":"晨雾","b":""},{"f":"彩虹","b":""},{"f":"海鸟","b":""},{"f":"鲸","b":""},{"f":"猫","b":""},{"f":"狗","b":""},{"f":"蝴蝶","b":""},{"f":"萤火虫","b":""},{"f":"落叶","b":""},{"f":"流星","b":""},{"f":"银河","b":""},{"f":"沙滩","b":""},{"f":"桥","b":""},{"f":"窗","b":""},{"f":"灯","b":""},{"f":"路","b":""},{"f":"晨露","b":""},{"f":"晚霞","b":""},{"f":"麦穗","b":""},{"f":"蒲公英","b":""},{"f":"海浪","b":""},{"f":"星光","b":""}]},{"n":17,"name":"物品信物卡","hint":"信物、礼物与随身物品","cards":[{"f":"信","b":""},{"f":"纸","b":""},{"f":"笔","b":""},{"f":"花","b":""},{"f":"戒指","b":""},{"f":"项链","b":""},{"f":"耳机","b":""},{"f":"伞","b":""},{"f":"围巾","b":""},{"f":"手套","b":""},{"f":"杯子","b":""},{"f":"书","b":""},{"f":"信笺","b":""},{"f":"信封","b":""},{"f":"礼物","b":""},{"f":"糖","b":""},{"f":"奶茶","b":""},{"f":"咖啡","b":""},{"f":"钥匙","b":""},{"f":"照片","b":""},{"f":"明信片","b":""},{"f":"贴纸","b":""},{"f":"铃铛","b":""},{"f":"丝带","b":""},{"f":"蜡烛","b":""},{"f":"玩偶","b":""},{"f":"手帕","b":""},{"f":"手表","b":""},{"f":"发饰","b":""},{"f":"车票","b":""},{"f":"书签","b":""},{"f":"信纸","b":""}]},{"n":18,"name":"季节月份卡","hint":"季节与时间节点","cards":[{"f":"春","b":""},{"f":"夏","b":""},{"f":"秋","b":""},{"f":"冬","b":""},{"f":"一月","b":""},{"f":"二月","b":""},{"f":"三月","b":""},{"f":"四月","b":""},{"f":"五月","b":""},{"f":"六月","b":""},{"f":"七月","b":""},{"f":"八月","b":""},{"f":"九月","b":""},{"f":"十月","b":""},{"f":"十一月","b":""},{"f":"十二月","b":""},{"f":"初春","b":""},{"f":"盛夏","b":""},{"f":"深秋","b":""},{"f":"寒冬","b":""},{"f":"清晨","b":""},{"f":"黄昏","b":""},{"f":"换季","b":""},{"f":"年末","b":""}]},{"n":19,"name":"身体部位卡","hint":"可与颜色、动作组合","cards":[{"f":"手","b":""},{"f":"眼","b":""},{"f":"唇","b":""},{"f":"肩","b":""},{"f":"背","b":""},{"f":"头发","b":""},{"f":"额头","b":""},{"f":"下巴","b":""},{"f":"脖颈","b":""},{"f":"掌心","b":""},{"f":"指尖","b":""},{"f":"脸颊","b":""},{"f":"耳朵","b":""},{"f":"膝盖","b":""},{"f":"手臂","b":""},{"f":"胸口","b":""},{"f":"手腕","b":""},{"f":"眉梢","b":""},{"f":"睫毛","b":""},{"f":"后颈","b":""}]},{"n":20,"name":"姿态神态卡","hint":"姿势、表情与神情","cards":[{"f":"低头","b":""},{"f":"回头","b":""},{"f":"沉默","b":""},{"f":"凝视","b":""},{"f":"微笑","b":""},{"f":"皱眉","b":""},{"f":"脸红","b":""},{"f":"躲闪","b":""},{"f":"靠近","b":""},{"f":"后退","b":""},{"f":"站着","b":""},{"f":"坐着","b":""},{"f":"等待","b":""},{"f":"仰望","b":""},{"f":"垂下眼","b":""},{"f":"抿唇","b":""},{"f":"握拳","b":""},{"f":"叹气","b":""},{"f":"发呆","b":""},{"f":"挥手","b":""},{"f":"转身","b":""},{"f":"仰头","b":""},{"f":"侧身","b":""},{"f":"抱紧","b":""},{"f":"松开","b":""},{"f":"抬眼","b":""},{"f":"抿嘴","b":""},{"f":"屏息","b":""}]},{"n":21,"name":"关系状态卡","hint":"两人关系与情感走向","cards":[{"f":"在一起","b":""},{"f":"分开","b":""},{"f":"想念","b":""},{"f":"等待","b":""},{"f":"重逢","b":""},{"f":"疏远","b":""},{"f":"靠近","b":""},{"f":"牵挂","b":""},{"f":"偏爱","b":""},{"f":"专属","b":""},{"f":"误会","b":""},{"f":"和解","b":""},{"f":"守护","b":""},{"f":"同行","b":""},{"f":"错过","b":""},{"f":"约定","b":""},{"f":"暗恋","b":""},{"f":"坦白","b":""},{"f":"吃醋","b":""},{"f":"依赖","b":""},{"f":"信任","b":""},{"f":"思念","b":""},{"f":"陪伴","b":""},{"f":"别离","b":""},{"f":"等候","b":""},{"f":"心动","b":""},{"f":"归宿","b":""},{"f":"长久","b":""}]},{"n":22,"name":"感官氛围卡","hint":"触感、温度、声音与氛围","cards":[{"f":"温暖","b":""},{"f":"冰凉","b":""},{"f":"柔软","b":""},{"f":"粗糙","b":""},{"f":"安静","b":""},{"f":"喧闹","b":""},{"f":"香甜","b":""},{"f":"苦涩","b":""},{"f":"清脆","b":""},{"f":"低沉","b":""},{"f":"明亮","b":""},{"f":"昏暗","b":""},{"f":"干燥","b":""},{"f":"湿润","b":""},{"f":"轻松","b":""},{"f":"紧绷","b":""},{"f":"温柔","b":""},{"f":"尖锐","b":""},{"f":"和煦","b":""},{"f":"微凉","b":""},{"f":"厚重","b":""},{"f":"轻盈","b":""},{"f":"嘈杂","b":""},{"f":"静谧","b":""},{"f":"温热","b":""},{"f":"松弛","b":""}]},{"n":23,"name":"梦境意象卡","hint":"梦境与象征画面","cards":[{"f":"梦","b":""},{"f":"回忆","b":""},{"f":"影子","b":""},{"f":"倒影","b":""},{"f":"光","b":""},{"f":"雾","b":""},{"f":"迷宫","b":""},{"f":"车站","b":""},{"f":"列车","b":""},{"f":"门","b":""},{"f":"镜子","b":""},{"f":"蝴蝶","b":""},{"f":"流星","b":""},{"f":"深海","b":""},{"f":"星空","b":""},{"f":"远方","b":""},{"f":"梦境","b":""},{"f":"泡影","b":""},{"f":"回声","b":""},{"f":"渡口","b":""},{"f":"长夜","b":""},{"f":"微光","b":""},{"f":"旧时光","b":""},{"f":"空白","b":""}]}];
+
+    /* 内置牌：稳定 id = b_<组序>_<组内序>；同一个词在不同组是各自独立的一张牌 */
+    const BASE = [];
+    PAPER_DECK.forEach(function (g, gi) {
+        g.cards.forEach(function (c, ni) {
+            BASE.push({ id: 'b_' + gi + '_' + ni, f: c.f, b: c.b || '', g: g.name, hint: g.hint || '' });
+        });
+    });
+
+    const LS = 'pc_paper_settings_v2';
+    const DEF_VER = 3;      /* 默认数值版本：升级时把旧存档数值拉回新默认，卡牌内容不丢 */
+    const DEF_PROBS = [65, 55, 35, 30, 20, 15, 10, 5];   /* 权重合计 235 */
+    const DEF_TEMPO = {
+        chatDelayMin: 5,     /* 秒：联系人发牌延迟下限 */
+        chatDelayMax: 15,    /* 秒：联系人发牌延迟上限 */
+        shuffleMs: 600,      /* 毫秒：点抽牌后洗牌等待 */
+        flipGap: 260,        /* 毫秒：逐张翻牌间隔 */
+        spreadCount: 100,    /* 张：底部牌堆本次洗出的牌数 */
+        dealGap: 55,         /* 毫秒：底部牌堆逐张发牌间隔 */
+        chatReveal: false    /* 聊天卡片是否从牌背逐张翻开 */
+    };
+    let ST = { chatMode: false, probs: DEF_PROBS.slice(), autoProb: false, t: Object.assign({}, DEF_TEMPO) };
+    let DECK = { custom: [], edits: {}, deleted: {}, groups: [], groupOff: {} };
+    let SRC_GROUPS = null;   /* 牌堆来源分组：null=全部，数组=指定若干分组 */
+    let _deckCache = null;
+    let DEAL_TIMERS = [];
+
+    function clamp(v, lo, hi, dflt) {
+        const n = Number(v);
+        return isFinite(n) ? Math.max(lo, Math.min(hi, n)) : dflt;
+    }
+    function loadAll() {
+        try {
+            const raw = localStorage.getItem(LS);
+            if (raw) {
+                const o = JSON.parse(raw);
+                if (o && typeof o === 'object') {
+                    ST.chatMode = !!o.chatMode;
+                    if (o.v !== DEF_VER) {
+                        /* 旧存档：数值回到新默认，chatMode / 卡牌内容保留 */
+                        ST.autoProb = false;
+                        ST.probs = DEF_PROBS.slice();
+                        ST.t = Object.assign({}, DEF_TEMPO);
+                    } else {
+                        ST.autoProb = o.autoProb === true;
+                        if (Array.isArray(o.probs) && o.probs.length === 8) {
+                            ST.probs = o.probs.map(function (x) { return Math.round(clamp(x, 0, 999, 10)); });
+                        }
+                        if (o.t) for (const k in DEF_TEMPO) {
+                            if (DEF_TEMPO.hasOwnProperty(k)) {
+                                ST.t[k] = (k === 'chatReveal') ? !!o.t[k] : clamp(o.t[k], 0, 60000, DEF_TEMPO[k]);
+                            }
+                        }
+                    }
+                    if (Array.isArray(o.srcGroups)) SRC_GROUPS = o.srcGroups;
+                    if (o.deck) DECK = {
+                        custom: Array.isArray(o.deck.custom) ? o.deck.custom : [],
+                        edits: o.deck.edits || {}, deleted: o.deck.deleted || {},
+                        groups: Array.isArray(o.deck.groups) ? o.deck.groups : [],
+                        groupOff: o.deck.groupOff || {}
+                    };
+                }
+            }
+        } catch (e) {}
+        if (!ST.probs.some(function (x) { return x > 0; })) ST.probs = DEF_PROBS.slice();
+        syncFromAppData();
+    }
+    function saveAll() {
+        try {
+            localStorage.setItem(LS, JSON.stringify({ v: DEF_VER, chatMode: ST.chatMode, autoProb: ST.autoProb,
+                probs: ST.probs, t: ST.t, deck: DECK, srcGroups: SRC_GROUPS }));
+        } catch (e) {}
+        try {
+            if (typeof appData !== 'undefined' && appData) {
+                appData.settings = appData.settings || {};
+                appData.settings.paperCard = { v: DEF_VER, chatMode: ST.chatMode, autoProb: ST.autoProb,
+                    probs: ST.probs.slice(), t: Object.assign({}, ST.t), srcGroups: SRC_GROUPS };
+                appData.paperDeck = DECK;
+                if (typeof debouncedSaveData === 'function') debouncedSaveData();
+            }
+        } catch (e) {}
+    }
+    function syncFromAppData() {
+        try {
+            const p = appData && appData.settings && appData.settings.paperCard;
+            const d = appData && appData.paperDeck;
+            if (!p && !d) return;
+            if (p) {
+                ST.chatMode = !!p.chatMode;
+                if (p.v !== DEF_VER) {
+                    ST.autoProb = false; ST.probs = DEF_PROBS.slice(); ST.t = Object.assign({}, DEF_TEMPO);
+                } else {
+                    ST.autoProb = p.autoProb === true;
+                    if (Array.isArray(p.probs) && p.probs.length === 8) ST.probs = p.probs.slice();
+                    if (p.t) for (const k in DEF_TEMPO) {
+                        if (DEF_TEMPO.hasOwnProperty(k) && p.t[k] !== undefined) {
+                            ST.t[k] = (k === 'chatReveal') ? !!p.t[k] : clamp(p.t[k], 0, 60000, DEF_TEMPO[k]);
+                        }
+                    }
+                    if (Array.isArray(p.srcGroups)) SRC_GROUPS = p.srcGroups;
+                }
+            }
+            if (d && (Array.isArray(d.custom) || d.edits || d.deleted)) {
+                DECK = { custom: Array.isArray(d.custom) ? d.custom : [], edits: d.edits || {},
+                    deleted: d.deleted || {}, groups: Array.isArray(d.groups) ? d.groups : [],
+                    groupOff: d.groupOff || {} };
+            }
+        } catch (e) {}
+    }
+    function invalidateDeck() { _deckCache = null; }
+
+    /* ---------- 实时牌堆：内置 + 用户改动 ---------- */
+    function liveDeck() {
+        if (_deckCache) return _deckCache;
+        const out = [];
+        BASE.forEach(function (c) {
+            if (DECK.deleted[c.id]) return;
+            const e = DECK.edits[c.id] || {};
+            out.push({ id: c.id, f: e.f !== undefined ? e.f : c.f,
+                b: e.b !== undefined ? e.b : c.b, g: e.g !== undefined ? e.g : c.g,
+                hint: c.hint, custom: false, edited: !!DECK.edits[c.id] });
+        });
+        DECK.custom.forEach(function (c) {
+            out.push({ id: c.id, f: c.f, b: c.b || '', g: c.g || '我的卡牌',
+                hint: '', custom: true, edited: false });
+        });
+        out.forEach(function (c, i) { c.i = i; });
+        _deckCache = out;
+        return out;
+    }
+    function allGroupNames() {
+        const set = {};
+        liveDeck().forEach(function (c) { set[c.g] = 1; });
+        DECK.groups.forEach(function (g) { set[g] = 1; });
+        return Object.keys(set);
+    }
+
+    /* ---------- 抽张数 / 抽牌 ---------- */
+    function shuffleProbs() {
+        ST.probs = ST.probs.map(function () { return 3 + Math.floor(Math.random() * 28); });
+        saveAll();
+    }
+    function drawCount() {
+        if (ST.autoProb) shuffleProbs();
+        let ps = ST.probs.slice(), sum = ps.reduce(function (a, x) { return a + x; }, 0);
+        if (sum <= 0) { ps = DEF_PROBS.slice(); sum = ps.reduce(function (a, x) { return a + x; }, 0); }
+        let r = Math.random() * sum;
+        for (let i = 0; i < 8; i++) { r -= ps[i]; if (r < 0) return i + 1; }
+        return 8;
+    }
+    function deckPool(groups) {
+        const off = DECK.groupOff || {};
+        let d = liveDeck().filter(function (c) { return !off[c.g]; });
+        if (groups && groups.length) d = d.filter(function (c) { return groups.indexOf(c.g) >= 0; });
+        if (!d.length) d = liveDeck();   /* 全禁用或来源为空时回退全库，保证不出现空牌堆 */
+        return d;
+    }
+    function drawCards(n, groups) {
+        const pool = deckPool(groups);
+        const idx = pool.map(function (_, i) { return i; });
+        for (let i = idx.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const t = idx[i]; idx[i] = idx[j]; idx[j] = t;
+        }
+        let picked = idx.map(function (i) { return pool[i]; });
+        const need = Math.max(1, Math.floor(n));
+        if (picked.length < need) {
+            /* 选定分组牌数不足时，从其余启用分组补齐；仍不足才循环复用，保证牌堆张数准确 */
+            const used = {}; picked.forEach(function (c) { used[c.id] = 1; });
+            const rest = deckPool().filter(function (c) { return !used[c.id]; });
+            for (let i = rest.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                const t = rest[i]; rest[i] = rest[j]; rest[j] = t;
+            }
+            picked = picked.concat(rest.slice(0, need - picked.length));
+            while (picked.length < need) picked = picked.concat(pool.slice(0, need - picked.length));
+        }
+        return picked.slice(0, need);
+    }
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+
+    /* ---------- 装饰 ---------- */
+    const PAW = '<svg viewBox="0 0 40 40" width="100%" height="100%"><g fill="#8a5f3d"><circle cx="20" cy="27" r="9"/><circle cx="8" cy="15" r="4.3"/><circle cx="17" cy="9" r="4.3"/><circle cx="27" cy="10" r="4.3"/><circle cx="34" cy="18" r="4"/></g></svg>';
+    const CAT = '<svg viewBox="0 0 48 40" width="34" height="30"><path d="M8 14 L10 4 L18 9 Q24 7 30 9 L38 4 L40 14 Q42 26 24 32 Q6 26 8 14 Z" fill="none" stroke="#b08a61" stroke-width="1.6" stroke-linejoin="round"/><circle cx="18" cy="18" r="1.4" fill="#b08a61"/><circle cx="30" cy="18" r="1.4" fill="#b08a61"/><path d="M22 23 Q24 25 26 23" stroke="#b08a61" stroke-width="1.3" fill="none" stroke-linecap="round"/><path d="M6 22 L13 22 M6 26 L13 25 M35 22 L42 22 M35 25 L42 26" stroke="#b08a61" stroke-width="1.1" stroke-linecap="round"/></svg>';
+    function waveD() {
+        const x0 = 12, y0 = 12, x1 = 388, y1 = 788, seg = 16, a = 4;
+        let d = 'M' + x0 + ' ' + y0, i;
+        const nx = Math.floor((x1 - x0) / seg), ny = Math.floor((y1 - y0) / seg);
+        for (i = 0; i < nx; i++) d += ' q4 -' + a + ' 8 0 q4 ' + a + ' 8 0';
+        d += ' L' + x1 + ' ' + y0;
+        for (i = 0; i < ny; i++) d += ' q' + a + ' 4 0 8 q-' + a + ' 4 0 8';
+        d += ' L' + x1 + ' ' + y1;
+        for (i = 0; i < nx; i++) d += ' q-4 ' + a + ' -8 0 q-4 -' + a + ' -8 0';
+        d += ' L' + x0 + ' ' + y1;
+        for (i = 0; i < ny; i++) d += ' q-' + a + ' -4 0 -8 q' + a + ' -4 0 -8';
+        return d + ' L' + x0 + ' ' + y0 + ' Z';
+    }
+    function initDecor() {
+        const wp = document.getElementById('pc-wave-path'); if (wp) wp.setAttribute('d', waveD());
+        const a = document.getElementById('pc-paw-tl'), b = document.getElementById('pc-paw-tr');
+        if (a) a.innerHTML = PAW; if (b) b.innerHTML = PAW;
+        const c = document.getElementById('pc-wm-cat'); if (c) c.innerHTML = CAT;
+        const fan = document.getElementById('pc-fan');
+        if (fan && !fan.dataset.done) {
+            let h = '';
+            for (let i = 0; i < 17; i++) h += '<i style="transform:rotate(' + (-44 + i * 5.5).toFixed(1) + 'deg)"></i>';
+            fan.innerHTML = h; fan.dataset.done = '1';
+        }
+        const dl = document.getElementById('pcd-glist');
+        if (dl) dl.innerHTML = allGroupNames().map(function (g) { return '<option value="' + esc(g) + '"></option>'; }).join('');
+    }
+
+    /* ---------- 单张卡 ---------- */
+    function cardHTML(c, opt) {
+        opt = opt || {};
+        const len = (c.f || '').length;
+        const cls = len <= 2 ? '' : (len <= 5 ? ' small' : ' tiny');
+        const special = /手绘/.test(c.f);
+        const face = special ? CAT + '<div class="pc-word tiny" style="margin-top:6px">专属连接牌</div>'
+            : '<div class="pc-word' + cls + '">' + esc(c.f) + '</div>';
+        const hint = c.b ? esc(String(c.b).slice(0, 16)) : '';
+        return '<div class="pc-card' + (opt.flipped ? ' flipped' : '') + '" data-pci="' + c.i + '" data-pcid="' + esc(c.id) + '"' +
+            (opt.onclick ? ' onclick="' + opt.onclick + '"' : '') + '>' +
+            '<div class="pc-card-in">' +
+            '<div class="pc-side pc-back"><span class="pc-corner">CAT\'S</span>' + CAT +
+            '<div class="pc-wm-txt">Inner Voice</div><div class="pc-wm-sub">TAROT</div>' +
+            '<span class="pc-num">No.' + (c.i + 1) + '</span></div>' +
+            '<div class="pc-side pc-face"><span class="pc-corner">' + esc(c.g) + '</span>' + face +
+            (hint ? '<div class="pc-hint">' + hint + '</div>' : '') +
+            '<span class="pc-num">No.' + (c.i + 1) + '</span></div>' +
+            '</div></div>';
+    }
+    function bindFlip(root) {
+        if (!root) return;
+        root.querySelectorAll('.pc-card:not([data-flip-bound])').forEach(function (el) {
+            el.dataset.flipBound = '1';
+            el.addEventListener('click', function () {
+                if (el.dataset.noFlip === '1') return;
+                el.classList.toggle('flipped');
+            });
+        });
+    }
+    function cardsRowHTML(cards, flipped, inlineFlip, extraCls) {
+        return '<div class="pc-cards-row ' + (extraCls || '') + '">' + cards.map(function (c) {
+            return cardHTML(c, { flipped: !!flipped, onclick: inlineFlip ? "this.classList.toggle('flipped')" : '' });
+        }).join('') + '</div>';
+    }
+    function readout(cards) {
+        return {
+            head: '抽到 ' + cards.length + ' 张',
+            line: cards.map(function (c) { return c.f; }).join(' · '),
+            groups: cards.map(function (c, i) { return (i + 1) + '.' + c.g; }).join('　'),
+            chips: cards.map(function (c, i) { return '<span class="pc-chip">' + (i + 1) + '.' + esc(c.g) + '</span>'; }).join('')
+        };
+    }
+
+    /* ---------- 面板 / 页签 ---------- */
+    function open() {
+        syncFromAppData(); invalidateDeck(); initDecor();
+        renderProbs(); renderTempo();
+        const cs = document.getElementById('pc-chat-state');
+        cs.textContent = ST.chatMode ? '已开启 · 聊天里用卡片回复' : '未开启';
+        cs.className = 'pc-mode-state' + (ST.chatMode ? ' on' : '');
+        document.getElementById('pc-auto-prob').checked = !!ST.autoProb;
+        const dc = document.getElementById('pc-deck-count');
+        if (dc) dc.textContent = '共 ' + liveDeck().length + ' 张 / ' + allGroupNames().length + ' 组';
+        home();
+        const p = document.getElementById('pc-panel'); if (p) p.classList.add('show');
+    }
+    function close() {
+        const p = document.getElementById('pc-panel'); if (p) p.classList.remove('show');
+        const f = document.getElementById('pc-fan-slider'); if (f) f.style.display = 'none';
+        const c = document.getElementById('pc-content'); if (c) c.classList.remove('spread-mode');
+        clearDealTimers();
+    }
+    function home() {
+        document.getElementById('pc-home').style.display = 'flex';
+        document.getElementById('pc-draw').style.display = 'none';
+        const f = document.getElementById('pc-fan-slider'); if (f) f.style.display = 'none';
+        const c = document.getElementById('pc-content'); if (c) c.classList.remove('spread-mode');
+        clearDealTimers();
+    }
+    function drawHome() {
+        document.getElementById('pc-home').style.display = 'none';
+        document.getElementById('pc-draw').style.display = 'flex';
+        switchTab('random');
+    }
+    function backHome() { home(); }
+    function switchTab(t) {
+        document.querySelectorAll('[data-pc-tab]').forEach(function (b) { b.classList.toggle('active', b.dataset.pcTab === t); });
+        document.getElementById('pc-body-random').style.display = (t === 'random') ? 'flex' : 'none';
+        document.getElementById('pc-body-spread').style.display = (t === 'spread') ? 'flex' : 'none';
+        const f = document.getElementById('pc-fan-slider');
+        const c = document.getElementById('pc-content');
+        if (f) f.style.display = (t === 'spread') ? 'block' : 'none';
+        if (c) c.classList.toggle('spread-mode', t === 'spread');
+        const wm = document.querySelector('.pc-watermark');
+        if (wm) wm.style.display = (t === 'spread') ? 'none' : '';
+        clearDealTimers();
+        if (t === 'spread') spreadReset();
+    }
+
+    /* ---------- 概率 ---------- */
+    function renderProbs() {
+        const grid = document.getElementById('pc-probs-grid'); if (!grid) return;
+        grid.innerHTML = ST.probs.map(function (v, i) {
+            return '<div class="pc-prob-cell"><span>' + (i + 1) + '张</span>' +
+                '<input type="number" min="0" max="999" value="' + v + '" onchange="pcSetProb(' + i + ',this.value)"></div>';
+        }).join('');
+        const el = document.getElementById('pc-prob-sum');
+        if (el) el.textContent = '权重合计 ' + ST.probs.reduce(function (a, x) { return a + x; }, 0);
+    }
+    function setProb(i, v) { ST.probs[i] = Math.round(clamp(v, 0, 999, 10)); saveAll(); renderProbs(); }
+    function randomizeProbs() { shuffleProbs(); renderProbs(); }
+    function setAutoProb(v) { ST.autoProb = !!v; saveAll(); }
+
+    /* ---------- 时间与速度 ---------- */
+    const TEMPO_FIELDS = [
+        { k: 'chatDelayMin', label: '发牌延迟·最小', unit: '秒', min: 0, max: 60, step: 0.1 },
+        { k: 'chatDelayMax', label: '发牌延迟·最大', unit: '秒', min: 0, max: 60, step: 0.1 },
+        { k: 'shuffleMs', label: '洗牌等待', unit: '毫秒', min: 0, max: 10000, step: 50 },
+        { k: 'flipGap', label: '翻牌间隔', unit: '毫秒', min: 0, max: 5000, step: 20 },
+        { k: 'spreadCount', label: '底部牌堆张数', unit: '张', min: 6, max: 200, step: 1 },
+        { k: 'dealGap', label: '发牌间隔', unit: '毫秒', min: 0, max: 1000, step: 10 }
+    ];
+    function renderTempo() {
+        const g = document.getElementById('pc-tempo-grid'); if (!g) return;
+        g.innerHTML = TEMPO_FIELDS.map(function (f) {
+            return '<div class="pc-tempo-cell"><label>' + f.label + ' <span class="u">(' + f.unit + ')</span></label>' +
+                '<input type="number" min="' + f.min + '" max="' + f.max + '" step="' + f.step + '" value="' + ST.t[f.k] +
+                '" onchange="pcSetTempo(\'' + f.k + '\',this.value)"></div>';
+        }).join('') +
+            '<div class="pc-tempo-cell" style="grid-column:1/-1;display:flex;align-items:center;justify-content:space-between">' +
+            '<label style="margin:0">聊天卡片逐张翻开（默认全部直接显示）</label>' +
+            '<input type="checkbox" id="pc-chat-reveal" ' + (ST.t.chatReveal ? 'checked' : '') +
+            ' onchange="pcSetTempo(\'chatReveal\',this.checked)"></div>';
+    }
+    function setTempo(k, v) {
+        if (k === 'chatReveal') { ST.t.chatReveal = !!v; }
+        else {
+            const f = TEMPO_FIELDS.find(function (x) { return x.k === k; });
+            ST.t[k] = f ? clamp(v, f.min, f.max, DEF_TEMPO[k]) : clamp(v, 0, 60000, DEF_TEMPO[k]);
+            if (k === 'chatDelayMin' && ST.t.chatDelayMin > ST.t.chatDelayMax) ST.t.chatDelayMax = ST.t.chatDelayMin;
+            if (k === 'chatDelayMax' && ST.t.chatDelayMax < ST.t.chatDelayMin) ST.t.chatDelayMin = ST.t.chatDelayMax;
+        }
+        saveAll(); renderTempo();
+    }
+    function chatDelayMs() {
+        const a = Math.min(ST.t.chatDelayMin, ST.t.chatDelayMax), b = Math.max(ST.t.chatDelayMin, ST.t.chatDelayMax);
+        return (a + Math.random() * Math.max(0, b - a)) * 1000;
+    }
+
+    /* ---------- 模式一：开始聊天模式 ---------- */
+    function startChatMode() {
+        ST.chatMode = !ST.chatMode; saveAll();
+        const cs = document.getElementById('pc-chat-state');
+        cs.textContent = ST.chatMode ? '已开启 · 聊天里用卡片回复' : '未开启';
+        cs.className = 'pc-mode-state' + (ST.chatMode ? ' on' : '');
+        close();
+        try { if (typeof showToast === 'function') showToast(ST.chatMode ? '卡片传讯已开启：发问题，TA 用白卡回复' : '卡片传讯已关闭'); } catch (e) {}
+    }
+    function isChatMode() { syncFromAppData(); return !!ST.chatMode; }
+
+    function onUserSend(roleId, question) {
+        const role = (appData.roles || []).find(function (r) { return r.id === roleId; });
+        if (!role) { if (typeof triggerRoleReplyForRole === 'function') triggerRoleReplyForRole(roleId); return; }
+        const cards = drawCards(drawCount()), ro = readout(cards);
+        const payload = { uid: 'pc_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+            q: String(question || '').slice(0, 200), cards: cards, head: ro.head,
+            line: ro.line, groups: ro.groups, chips: ro.chips, reveal: !!ST.t.chatReveal };
+        const content = '<pcd>' + JSON.stringify(payload) + '</pcd>';
+        /* 整条回复（入库 + 上屏）一起延后，延迟期间不会提前出现在聊天记录里 */
+        setTimeout(function () {
+            const time = Date.now();
+            const msg = { id: time + Math.random(), sender: role.id, content: content, time: time, type: 'paper', read: false };
+            if (!appData.chats[role.id]) appData.chats[role.id] = [];
+            appData.chats[role.id].push(msg);
+            role.lastActive = time;
+            try { if (typeof debouncedSaveData === 'function') debouncedSaveData(); } catch (e) {}
+            if (typeof currentRoleId !== 'undefined' && currentRoleId === role.id && typeof appendMessageToDOM === 'function') {
+                appendMessageToDOM(role.id, msg.content, msg.time, null, 'paper');
+                if (payload.reveal) {
+                    /* 聊天列表可能被未读数/存档回调重绘，不能缓存节点；按 uid 反复定位 */
+                    const sel = '.pc-msg[data-pcuid="' + payload.uid + '"] .pc-card';
+                    const total = cards.length, gap = Math.max(20, ST.t.flipGap), t0 = Date.now();
+                    const tick = setInterval(function () {
+                        const els = document.querySelectorAll(sel);
+                        if (els.length) {
+                            const should = Math.min(els.length, Math.max(0, Math.floor((Date.now() - t0 - 260) / gap) + 1));
+                            for (let i = 0; i < should; i++) els[i].classList.add('flipped');
+                        }
+                        if (Date.now() - t0 > 260 + total * gap + 600 || Date.now() - t0 > 15000) clearInterval(tick);
+                    }, 70);
+                }
+            } else {
+                try { if (typeof incrementUnread === 'function') incrementUnread(role.id); } catch (e) {}
+            }
+        }, chatDelayMs());
+    }
+
+    /* ---------- 模式二 · ①随机抽牌（洗牌等待 + 逐张翻开） ---------- */
+    function randomDraw() {
+        const qv = (document.getElementById('pc-question').value || '').trim();
+        const box = document.getElementById('pc-result');
+        box.innerHTML = '<div class="pc-shuffle-anim"><i></i><i></i><i></i></div>' +
+            '<div class="pc-shuffling">✦ 正在洗牌…</div>';
+        setTimeout(function () {
+            const n = drawCount(), cards = drawCards(n), ro = readout(cards);
+            box.innerHTML =
+                (qv ? '<div class="pc-res-head">你的疑问：' + esc(qv) + '</div>' : '') +
+                '<div class="pc-res-head">' + ro.head + ' · 轻触卡片翻面</div>' +
+                '<div class="pc-res-line">' + esc(ro.line) + '</div>' +
+                '<div class="pc-res-groups">' + ro.chips + '</div>' +
+                cardsRowHTML(cards, false) +
+                (cards.length > 4 ? '<div class="pc-swipe-tip">共 ' + cards.length + ' 张，轻触可翻回牌背</div>' : '');
+            const row = box.querySelector('.pc-cards-row');
+            bindFlip(row);
+            Array.prototype.forEach.call(row.querySelectorAll('.pc-card'), function (el, i) {
+                setTimeout(function () { if (el.isConnected) el.classList.add('flipped'); }, 260 + i * ST.t.flipGap);
+            });
+            if (ST.autoProb) renderProbs();
+        }, Math.max(0, ST.t.shuffleMs));
+    }
+
+    /* ---------- 模式二 · ②底部展牌：左右滑 / 点选 / 拖动 / 翻面 ---------- */
+    let DRAG = null;
+    function clearDealTimers() { DEAL_TIMERS.forEach(clearTimeout); DEAL_TIMERS = []; }
+    /* ---------- 更换牌堆内容：按分组来源重新洗一批 ---------- */
+    function srcOpen() {
+        syncFromAppData(); invalidateDeck();
+        DECK.groupOff = DECK.groupOff || {};
+        const gs = allGroupNames(), off = DECK.groupOff;
+        const cur = SRC_GROUPS;
+        const box = document.getElementById('pc-src-list'); if (!box) return;
+        box.innerHTML = gs.map(function (g) {
+            const disabled = !!off[g];
+            const checked = !disabled && (!cur || cur.indexOf(g) >= 0);
+            const n = liveDeck().filter(function (c) { return c.g === g; }).length;
+            return '<label class="pc-src-row' + (disabled ? ' off' : '') + '">' +
+                '<input type="checkbox" data-g="' + esc(g) + '"' + (checked ? ' checked' : '') + (disabled ? ' disabled' : '') + '>' +
+                '<span>' + esc(g) + '</span>' +
+                (disabled ? '<span class="pc-src-off">已禁用抽取</span>' : '') +
+                '<span class="pc-src-n">' + n + ' 张</span></label>';
+        }).join('');
+        const cnt = document.getElementById('pc-src-count');
+        if (cnt) cnt.value = Math.round(clamp(ST.t.spreadCount, 6, 200, 100));
+        document.getElementById('pc-src-mask').classList.add('show');
+    }
+    function srcClose() { document.getElementById('pc-src-mask').classList.remove('show'); }
+    function srcToggleAll(on) {
+        document.querySelectorAll('#pc-src-list input[type=checkbox]').forEach(function (x) {
+            if (!x.disabled) x.checked = !!on;
+        });
+    }
+    function srcRandom() {
+        srcClose();
+        SRC_GROUPS = null;
+        saveAll(); spreadReset();
+        try { showToast('已随机更换一批牌堆内容'); } catch (e) {}
+    }
+    function srcApply() {
+        const all = document.querySelectorAll('#pc-src-list input[type=checkbox]');
+        const picked = [].slice.call(all).filter(function (x) { return x.checked && !x.disabled; })
+            .map(function (x) { return x.dataset.g; });
+        const gs = allGroupNames();
+        const v = Math.round(clamp((document.getElementById('pc-src-count') || {}).value, 6, 200, 100));
+        ST.t.spreadCount = v;
+        SRC_GROUPS = (picked.length === 0 || picked.length === gs.length) ? null : picked;
+        /* 全不选 = 不换来源、只重洗；避免空牌堆 */
+        if (!picked.length) SRC_GROUPS = null;
+        srcClose(); saveAll(); spreadReset(); renderTempo();
+        try { showToast('牌堆已更换：' + (SRC_GROUPS ? SRC_GROUPS.length + ' 个分组' : '全部卡牌') + ' · ' + v + ' 张'); } catch (e) {}
+    }
+    function spreadReset() {
+        const rail = document.getElementById('pc-spread-rail');
+        const board = document.getElementById('pc-board');
+        if (!rail || !board) return;
+        clearDealTimers();
+        /* 重新洗牌 = 牌桌清空 + 整批重抽 */
+        board.querySelectorAll('.pc-card').forEach(function (el) { el.remove(); });
+        board.classList.remove('has-cards');
+        updateBoardCount(board);
+
+        const n = Math.round(clamp(ST.t.spreadCount, 6, 200, 100));
+        const cards = drawCards(n, SRC_GROUPS);
+        rail.innerHTML = cards.map(function (c, i) {
+            const ang = ((i / Math.max(1, n - 1)) - 0.5) * 22;
+            const sx = (i % 2 ? 1 : -1) * (8 + (i % 5) * 5);
+            return cardHTML(c, { flipped: false }).replace('class="pc-card"',
+                'class="pc-card" style="--rot:' + ang.toFixed(1) + 'deg;--sx:' + sx + 'px"');
+        }).join('');
+
+        /* 洗牌动画：牌交错飞散再归位，牌桌同步蒙层 */
+        /* 强制 reflow：展牌页刚从 display:none 切出来时，不 reflow 动画会被浏览器跳过 */
+        void rail.offsetWidth;
+        rail.classList.add('shuffling');
+        if (n > 40) rail.classList.add('no-anim');   /* 100 张并发动画会掉帧，蒙层动画照常 */
+        board.classList.add('shuffling');
+        const stagger = Math.min(20, Math.round(420 / Math.max(1, n)));
+        Array.prototype.forEach.call(rail.querySelectorAll('.pc-card'), function (el, i) {
+            el.style.animationDelay = (i * stagger) + 'ms';
+        });
+        const animMs = 1150 + n * stagger;
+
+        DEAL_TIMERS.push(setTimeout(function () {
+            rail.classList.remove('shuffling', 'no-anim');
+            board.classList.remove('shuffling');
+            Array.prototype.forEach.call(rail.querySelectorAll('.pc-card'), function (el) {
+                el.style.animationDelay = '';
+                DEAL_TIMERS.push(setTimeout(function () { if (el.isConnected) el.classList.add('dealt'); }, 0));
+            });
+            /* 逐张摊开：牌数多时自动压缩节奏，100 张约 1.6 秒发完 */
+            const gap = Math.min(ST.t.dealGap, Math.round(1600 / Math.max(1, n)));
+            Array.prototype.forEach.call(rail.querySelectorAll('.pc-card'), function (el, i) {
+                DEAL_TIMERS.push(setTimeout(function () { if (el.isConnected) el.classList.add('dealt'); }, i * gap));
+            });
+        }, animMs));
+
+        const lab = document.getElementById('pc-fan-label');
+        if (lab) lab.textContent = '← 左右滑动牌堆（本次 ' + n + ' 张 · ' +
+            (SRC_GROUPS ? SRC_GROUPS.length + ' 个分组' : '全部卡牌') + '）· 按住直接拖到上方 →';
+        const hint = document.getElementById('pc-board-hint');
+        if (hint) hint.innerHTML = '从下方牌堆直接把牌拖上来<br>放在任意位置 · 点牌翻面';
+        bindSpread(rail, board);
+    }
+    function updateBoardCount(board) {
+        const el = document.getElementById('pc-board-count');
+        if (el) el.textContent = board.querySelectorAll('.pc-card.placed').length + ' 张';
+        board.classList.toggle('has-cards', board.querySelectorAll('.pc-card.placed').length > 0);
+    }
+    function railRot(rail, el) {
+        const list = Array.prototype.slice.call(rail.querySelectorAll('.pc-card'));
+        const i = Math.max(0, list.indexOf(el));
+        const n = Math.max(1, list.length);
+        return ((i / n) - 0.5) * 22;
+    }
+    function returnToRail(el, rail) {
+        el.classList.remove('placed', 'dragging', 'sel', 'flipped');
+        el.style.cssText = '';
+        el.classList.add('dealt');
+        rail.appendChild(el);
+        el.style.setProperty('--rot', railRot(rail, el).toFixed(1) + 'deg');
+        bindSpread(rail, document.getElementById('pc-board'));
+    }
+    function spreadClear() {
+        const rail = document.getElementById('pc-spread-rail');
+        const board = document.getElementById('pc-board');
+        if (!rail || !board) return;
+        board.querySelectorAll('.pc-card').forEach(function (el) { returnToRail(el, rail); });
+        updateBoardCount(board);
+    }
+    /* 自由落点 + 自动避让：先试手指位置，撞到已有牌就找最近的空位 */
+    function placeOnBoard(el, board, cx, cy) {
+        const br = board.getBoundingClientRect();
+        const W = 54, H = 74, GAP = 3;
+        let x = cx - br.left - W / 2, y = cy - br.top - H / 2;
+        x = Math.max(0, Math.min(br.width - W, x));
+        y = Math.max(0, Math.min(br.height - H, y));
+        const taken = [];
+        board.querySelectorAll('.pc-card.placed').forEach(function (o) {
+            if (o === el) return;
+            taken.push({ x: parseFloat(o.style.left) || 0, y: parseFloat(o.style.top) || 0 });
+        });
+        const fits = function (px, py) {
+            for (let i = 0; i < taken.length; i++) {
+                const r = taken[i];
+                if (px < r.x + W + GAP && px + W + GAP > r.x &&
+                    py < r.y + H + GAP && py + H + GAP > r.y) return false;
+            }
+            return true;
+        };
+        if (!fits(x, y)) {
+            /* 网格候选按到落点的距离排序，取最近的空位；横竖自然各能排 4~5 张 */
+            const cw = W + GAP + 2, ch = H + GAP + 2;
+            const cols = Math.max(1, Math.floor((br.width - W) / cw) + 1);
+            const rows = Math.max(1, Math.floor((br.height - H) / ch) + 1);
+            const cand = [];
+            for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+                const px = Math.min(br.width - W, c * cw), py = Math.min(br.height - H, r * ch);
+                cand.push({ x: px, y: py, d: (px - x) * (px - x) + (py - y) * (py - y) });
+            }
+            cand.sort(function (a, b) { return a.d - b.d; });
+            let found = null;
+            for (let i = 0; i < cand.length; i++) if (fits(cand[i].x, cand[i].y)) { found = cand[i]; break; }
+            if (found) { x = found.x; y = found.y; }
+        }
+        el.classList.remove('dragging', 'sel');
+        el.style.cssText = '';
+        el.classList.add('placed');
+        board.appendChild(el);
+        el.style.left = x + 'px';
+        el.style.top = y + 'px';
+        updateBoardCount(board);
+        bindSpread(document.getElementById('pc-spread-rail'), board);
+    }
+    /* ---------- 手势：window 级监听 + 拖拽代理 ----------
+       不再依赖元素自身的 pointermove/up，也不 setPointerCapture，
+       浏览器 pan 或列表重绘导致的 pointercancel 都不会让拖动中断。 */
+    function endDrag() {
+        if (!DRAG) return;
+        const d = DRAG; DRAG = null;
+        if (d.ghost && d.ghost.parentNode) d.ghost.parentNode.removeChild(d.ghost);
+        if (d.el) d.el.classList.remove('ghost-src');
+        if (d.ph && d.ph.parentNode) d.ph.parentNode.removeChild(d.ph);
+    }
+    function makeGhost(el, d) {
+        const g = el.cloneNode(true);
+        g.classList.add('pc-drag-ghost');
+        g.classList.remove('placed', 'dragging', 'sel', 'ghost-src');
+        g.dataset.spreadBound = '';
+        g.dataset.noFlip = '';
+        g.style.cssText = '';
+        g.style.width = d.w + 'px';
+        g.style.height = d.h + 'px';
+        g.style.left = (d.sx - d.ox) + 'px';
+        g.style.top = (d.sy - d.oy) + 'px';
+        document.body.appendChild(g);
+        return g;
+    }
+    function onPointerMove(e) {
+        if (!DRAG) return;
+        const d = DRAG, dx = e.clientX - d.sx, dy = e.clientY - d.sy;
+        if (!d.mode) {
+            if (Math.abs(dx) + Math.abs(dy) < 5) return;
+            /* 只有"明确横向"才滑牌堆；斜向/纵向一律拖牌，避免拖不动 */
+            const horiz = d.fromRail && Math.abs(dx) > 16 && Math.abs(dx) > Math.abs(dy) * 2.1;
+            d.mode = horiz ? 'scroll' : 'drag';
+            if (d.mode === 'drag') {
+                d.ghost = makeGhost(d.el, d);
+                d.el.classList.add('ghost-src');
+            }
+        }
+        if (d.mode === 'scroll') {
+            d.rail.scrollLeft = d.startScroll - dx;
+            if (e.cancelable) e.preventDefault();
+            return;
+        }
+        if (d.ghost) {
+            d.ghost.style.left = (e.clientX - d.ox) + 'px';
+            d.ghost.style.top = (e.clientY - d.oy) + 'px';
+        }
+        if (e.cancelable) e.preventDefault();
+    }
+    function onPointerUp(e) {
+        if (!DRAG) return;
+        const d = DRAG, el = d.el, rail = d.rail, board = d.board;
+        endDrag();
+        if (d.mode === 'scroll') return;
+        if (d.mode === 'drag') {
+            const br = board.getBoundingClientRect();
+            /* 容差放宽到 40px：靠近牌桌即可放入，不会"放不下" */
+            const inBoard = e.clientX >= br.left - 40 && e.clientX <= br.right + 40 &&
+                            e.clientY >= br.top - 40 && e.clientY <= br.bottom + 40;
+            if (inBoard) {
+                placeOnBoard(el, board,
+                    Math.max(br.left + 6, Math.min(br.right - 6, e.clientX)),
+                    Math.max(br.top + 6, Math.min(br.bottom - 6, e.clientY)));
+            } else if (d.fromBoard) {
+                returnToRail(el, rail);       /* 桌上牌拖出去 = 收回牌堆 */
+            } else {
+                el.classList.remove('dragging');
+                el.style.cssText = '';
+                el.classList.add('dealt');    /* 牌堆牌没进牌桌：原地不动，不吞牌 */
+                bindSpread(rail, board);
+            }
+        } else {
+            el.classList.toggle('flipped');   /* 短按翻面 */
+        }
+    }
+    function onPointerCancel() {
+        if (!DRAG) return;
+        const d = DRAG;
+        endDrag();
+        if (d.mode === 'drag') {
+            d.el.classList.remove('dragging');
+            d.el.style.cssText = '';
+            d.el.classList.add('dealt');
+            bindSpread(d.rail, d.board);
+        }
+    }
+    function bindSpread(rail, board) {
+        if (!rail || !board) return;
+        const nodes = [].slice.call(rail.querySelectorAll('.pc-card'))
+            .concat([].slice.call(board.querySelectorAll('.pc-card')));
+        nodes.forEach(function (el) {
+            if (el.dataset.spreadBound === '1') return;
+            el.dataset.spreadBound = '1';
+            el.dataset.noFlip = '1';
+            el.addEventListener('pointerdown', function (e) {
+                if (DRAG) endDrag();
+                const r = el.getBoundingClientRect();
+                DRAG = { el: el, rail: rail, board: board,
+                    sx: e.clientX, sy: e.clientY,
+                    ox: e.clientX - r.left, oy: e.clientY - r.top,
+                    w: r.width, h: r.height,
+                    mode: '', fromRail: el.parentElement === rail,
+                    fromBoard: el.parentElement === board,
+                    startScroll: rail.scrollLeft };
+            });
+        });
+    }
+    /* 全局只注册一次，牌怎么重绘都不影响 */
+    window.addEventListener('pointermove', onPointerMove, { passive: false });
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerCancel);
+
+    /* ---------- 卡牌内容库（挂在字卡库内） ---------- */
+    const DQ = { group: '全部', limit: 120, open: '' };
+    const DOT_COLORS = ['#e08a7a','#e0b06a','#8fbf8a','#7fa8d8','#ac8ad0','#7fbcc0','#d08fa8','#b0a06a','#8a9ec0','#c08a6a'];
+    let EDIT_ID = null;
+    function deckCount() { return liveDeck().length; }
+    function renderDeckLib(body, q) {
+        if (!body) return;
+        syncFromAppData(); invalidateDeck();
+        DECK.groupOff = DECK.groupOff || {};
+        const kw = String(q || '').trim().toLowerCase();
+        const all = liveDeck();
+        const groups = allGroupNames();
+        const off = DECK.groupOff;
+        const offN = groups.filter(function (g) { return !!off[g]; }).length;
+        let h = '<div class="pcdl">';
+        h += '<div class="pcdl-note">🎴 卡牌内容库 · 共 <strong>' + all.length + ' 张 / ' + groups.length + ' 组</strong>' +
+             (offN ? ' · 已禁用 ' + offN + ' 组' : '') +
+             '　<button class="pcdl-mini" onclick="pcDeckTestDraw()">试抽一张</button>' +
+             '<div id="pcdl-test-box"></div></div>';
+
+        /* 搜索：所有命中卡牌平铺，每条带「分类 · 分组」标签，点标签跳回原分组 */
+        if (kw) {
+            const hits = all.filter(function (c) {
+                return (c.f + ' ' + c.b + ' ' + c.g).toLowerCase().indexOf(kw) >= 0;
+            });
+            const _t = document.getElementById('crl-total');
+            if (_t) _t.textContent = all.length + ' 张卡牌' + (offN ? ' · 已禁用 ' + offN + ' 组' : '');
+            if (!hits.length) { h += '<div class="pcdl-empty">没有匹配的卡牌，换个关键词试试</div></div>'; body.innerHTML = h; return; }
+            h += '<div class="pcdl-hint">找到 ' + hits.length + ' 条 · 点分组标签可跳回该组</div><div class="pcdl-results">';
+            hits.slice(0, 300).forEach(function (c) {
+                let tag = '<span class="crl-item-tag">' + esc(c.g) + '</span>';
+                if (c.custom) tag += ' <span class="crl-item-tag">自建</span>';
+                else if (c.edited) tag += ' <span class="crl-item-tag">已改</span>';
+                const cid = esc(c.id);
+                h += '<div class="crl-item pcdl-row">' +
+                     '<span class="crl-item-text">' +
+                     '<span class="crl-group-tag" onclick="event.stopPropagation();pcDeckGoGroup(\'' + esc(c.g) + '\')">' + esc(c.g) + '</span>' +
+                     esc(c.f) + (c.b ? ' <span class="pcdl-b">' + esc(c.b) + '</span>' : '') + tag + '</span>' +
+                     '<button class="crl-item-act" onclick="event.stopPropagation();pcDeckOpenEditor(\'' + cid + '\')">改</button>' +
+                     '<button class="crl-item-act del" onclick="event.stopPropagation();pcDeckDel(\'' + cid + '\')">删</button>' +
+                     '</div>';
+            });
+            h += '</div></div>';
+            body.innerHTML = h;
+            return;
+        }
+
+        /* 无搜索：按图二的字卡库布局 —— 分组一行一条，带圆点 / 张数 / 抽取开关 / 展开箭头 */
+        groups.forEach(function (g, gi) {
+            const items = all.filter(function (c) { return c.g === g; });
+            const open = DQ.open === g;
+            const isOff = !!off[g];
+            const color = DOT_COLORS[gi % DOT_COLORS.length];
+            h += '<div class="crl-cat pcdl-cat' + (open ? ' open' : '') + (isOff ? ' catoff' : '') + '">'
+               + '<div class="crl-cat-head" onclick="pcDeckToggleCat(\'' + esc(g) + '\')">'
+               + '<span class="crl-dot" style="background:' + color + '"></span>'
+               + '<span class="crl-cat-name">' + esc(g) + '</span>'
+               + '<span class="crl-cat-count">1 组 · ' + items.length + ' 张'
+               + (isOff ? ' · <b style="color:#c98b7a;font-weight:600">不抽取</b>' : '') + '</span>'
+               + '<div class="crl-catsw' + (isOff ? '' : ' on') + '" onclick="event.stopPropagation();pcDeckSwitch(\'' + esc(g) + '\')"'
+               + ' title="' + (isOff ? '已关闭抽取，点击开启' : '正在抽取，点击关闭') + '"><span class="crl-catsw-knob"></span></div>'
+               + '<span class="crl-chev">›</span></div>';
+            if (open) {
+                const lim = Math.min(items.length, DQ.limit);
+                h += '<div class="crl-subs"><div class="pcdl-items">';
+                items.slice(0, lim).forEach(function (c) {
+                    let tag = '';
+                    if (c.custom) tag = ' <span class="crl-item-tag">自建</span>';
+                    else if (c.edited) tag = ' <span class="crl-item-tag">已改</span>';
+                    const cid = esc(c.id);
+                    h += '<div class="crl-item pcdl-row" onclick="pcDeckOpenEditor(\'' + cid + '\')">'
+                       + '<span class="crl-item-text"><span class="pcdl-no">' + (c.i + 1) + '</span> '
+                       + esc(c.f) + (c.b ? ' <span class="pcdl-b">' + esc(c.b) + '</span>' : '') + tag + '</span>'
+                       + '<button class="crl-item-act" onclick="event.stopPropagation();pcDeckOpenEditor(\'' + cid + '\')">改</button>'
+                       + '<button class="crl-item-act del" onclick="event.stopPropagation();pcDeckDel(\'' + cid + '\')">删</button>'
+                       + '</div>';
+                });
+                if (items.length > lim) h += '<button class="pcdl-btn pcdl-more" onclick="pcDeckMore()">再显示 120 张</button>';
+                h += '</div></div>';
+            }
+            h += '</div>';
+        });
+        h += '</div>';
+        body.innerHTML = h;
+
+        const total = document.getElementById('crl-total');
+        if (total && document.querySelector('.crl-tab-btn.active[data-tab="paper"]')) {
+            total.textContent = all.length + ' 张卡牌' + (offN ? ' · 已禁用 ' + offN + ' 组' : '');
+        }
+    }
+    function deckToggleCat(g) {
+        DQ.open = (DQ.open === g) ? '' : g;
+        DQ.limit = 120;
+        const b = document.getElementById('crl-body'); const keep = b ? b.scrollTop : 0;
+        rerenderDeckLib();
+        if (b) b.scrollTop = keep;   /* 展开分组不回顶部 */
+    }
+    function deckSwitch(g) {
+        DECK.groupOff = DECK.groupOff || {};
+        if (DECK.groupOff[g]) delete DECK.groupOff[g]; else DECK.groupOff[g] = 1;
+        const b = document.getElementById('crl-body'); const keep = b ? b.scrollTop : 0;
+        deckSaveAll();
+        if (b) b.scrollTop = keep;
+        try { showToast(DECK.groupOff[g] ? '「' + g + '」已关闭，不再抽取' : '「' + g + '」已开启抽取'); } catch (e) {}
+    }
+    function deckGoGroup(g) {
+        DQ.group = g; DQ.open = g; DQ.limit = 120;
+        const si = document.getElementById('crl-search');
+        if (si) si.value = '';
+        if (window.__crlClearQ) window.__crlClearQ();
+        rerenderDeckLib();
+    }
+    function deckGroup(g) { DQ.group = g; DQ.limit = 120; rerenderDeckLib(); }
+    function deckMore() { DQ.limit += 120; rerenderDeckLib(); }
+    function rerenderDeckLib() {
+        const body = document.getElementById('crl-body'), q = document.getElementById('crl-search');
+        renderDeckLib(body, q ? q.value : '');   /* 总数由 renderDeckLib 统一计算（含已禁用组数） */
+    }
+    function deckSaveAll() { invalidateDeck(); saveAll(); rerenderDeckLib(); }
+
+    function deckOpenEditor(id) {
+        EDIT_ID = id || null;
+        let f = '', b = '', g = '';
+        if (id) {
+            const c = liveDeck().find(function (x) { return x.id === id; });
+            if (!c) return;
+            f = c.f; b = c.b; g = c.g;
+        }
+        document.getElementById('pcd-title').textContent = id ? '编辑卡牌' : '新增卡牌';
+        document.getElementById('pcd-f').value = f;
+        document.getElementById('pcd-b').value = b;
+        document.getElementById('pcd-g').value = g;
+        const dl = document.getElementById('pcd-glist');
+        if (dl) dl.innerHTML = allGroupNames().map(function (x) { return '<option value="' + esc(x) + '"></option>'; }).join('');
+        document.getElementById('pc-deck-mask').classList.add('show');
+    }
+    function deckCloseEditor() { document.getElementById('pc-deck-mask').classList.remove('show'); EDIT_ID = null; }
+    function deckSave() {
+        const isNew = !EDIT_ID;
+        const f = (document.getElementById('pcd-f').value || '').trim();
+        const b = (document.getElementById('pcd-b').value || '').trim();
+        let g = (document.getElementById('pcd-g').value || '').trim() || '我的卡牌';
+        if (!f) { try { showToast('卡面词不能为空'); } catch (e) {} return; }
+        if (allGroupNames().indexOf(g) < 0) { DECK.groups.push(g); }
+        if (EDIT_ID) {
+            const isCustom = EDIT_ID.indexOf('c_') === 0;
+            if (isCustom) {
+                const c = DECK.custom.find(function (x) { return x.id === EDIT_ID; });
+                if (c) { c.f = f; c.b = b; c.g = g; }
+            } else {
+                DECK.edits[EDIT_ID] = { f: f, b: b, g: g };
+            }
+        } else {
+            DECK.custom.push({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5), f: f, b: b, g: g });
+        }
+        if (isNew) { DQ.group = g; DQ.limit = 120; }
+        deckCloseEditor(); deckSaveAll();
+        try { showToast('已保存'); } catch (e) {}
+    }
+    function deckDel(id) {
+        const c = liveDeck().find(function (x) { return x.id === id; });
+        if (!c) return;
+        let ok = true;
+        try { if (typeof showConfirm === 'function') { showConfirm('删除卡牌「' + c.f + '」？', function () { doDel(id); }); return; } } catch (e) {}
+        if (ok) doDel(id);
+    }
+    function doDel(id) {
+        if (id.indexOf('c_') === 0) DECK.custom = DECK.custom.filter(function (x) { return x.id !== id; });
+        else { DECK.deleted[id] = true; delete DECK.edits[id]; }
+        deckSaveAll();
+        try { showToast('已删除'); } catch (e) {}
+    }
+    function deckRestore() {
+        try {
+            if (typeof showConfirm === 'function') {
+                showConfirm('恢复内置卡牌？你新增/修改/删除的内容都会清空。', doRestore);
+                return;
+            }
+        } catch (e) {}
+        doRestore();
+    }
+    function doRestore() {
+        DECK = { custom: [], edits: {}, deleted: {}, groups: [], groupOff: {} };
+        DQ.group = '全部'; DQ.limit = 120;
+        deckSaveAll();
+        try { showToast('已恢复内置 563 张'); } catch (e) {}
+    }
+    /* ---- 对齐字卡库的批量管理能力 ---- */
+    function deckBatch() {
+        document.getElementById('pcb-text').value = '';
+        document.getElementById('pcb-g').value = DQ.group === '全部' ? '我的卡牌' : DQ.group;
+        document.getElementById('pc-batch-mask').classList.add('show');
+    }
+    function deckBatchClose() { document.getElementById('pc-batch-mask').classList.remove('show'); }
+    function deckBatchSave() {
+        const txt = document.getElementById('pcb-text').value || '';
+        const dfltG = (document.getElementById('pcb-g').value || '').trim() || '我的卡牌';
+        const lines = txt.split(/\r?\n/).map(function (x) { return x.trim(); }).filter(Boolean);
+        let added = 0;
+        lines.forEach(function (line) {
+            const p = line.split('|').map(function (x) { return x.trim(); });
+            const f = p[0]; if (!f) return;
+            const b = p[1] || '', g = p[2] || dfltG;
+            if (allGroupNames().indexOf(g) < 0) DECK.groups.push(g);
+            DECK.custom.push({ id: 'c_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+                f: f, b: b, g: g });
+            added++;
+        });
+        deckBatchClose();
+        /* 导入后直接定位到默认分组，立刻能看到刚导入的牌 */
+        if (added) { DQ.group = dfltG; DQ.limit = 120; deckSaveAll(); }
+        try { showToast(added ? '已导入 ' + added + ' 张卡牌' : '没有可导入的内容'); } catch (e) {}
+    }
+    function deckExport() {
+        const lines = liveDeck().map(function (c) {
+            return [c.f, c.b || '', c.g].join(' | ');
+        });
+        try {
+            const blob = new Blob(['\ufeff' + lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = '卡牌内容库.txt';
+            document.body.appendChild(a); a.click();
+            setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+            showToast('已导出 ' + lines.length + ' 张');
+        } catch (e) { try { showToast('导出失败'); } catch (e2) {} }
+    }
+    function deckDedup() {
+        const seen = {}, dups = [];
+        liveDeck().forEach(function (c) {
+            const k = c.f + '\u0001' + c.g;
+            if (seen[k]) dups.push(c.id); else seen[k] = 1;
+        });
+        if (!dups.length) { try { showToast('没有重复卡牌'); } catch (e) {} return; }
+        const doit = function () {
+            dups.forEach(function (id) {
+                if (id.indexOf('c_') === 0) DECK.custom = DECK.custom.filter(function (x) { return x.id !== id; });
+                else { DECK.deleted[id] = true; delete DECK.edits[id]; }
+            });
+            DQ.group = '全部'; DQ.limit = 120;
+            deckSaveAll();
+            try { showToast('已清理 ' + dups.length + ' 张重复卡牌'); } catch (e) {}
+        };
+        try {
+            if (typeof showConfirm === 'function') { showConfirm('发现 ' + dups.length + ' 张重复卡牌，清理掉吗？', doit); return; }
+        } catch (e) {}
+        doit();
+    }
+    function deckNewGroup() {
+        const doit = function (v) {
+            const g = String(v || '').trim();
+            if (!g) return;
+            if (allGroupNames().indexOf(g) < 0) DECK.groups.push(g);
+            DQ.group = g; DQ.limit = 120;
+            deckSaveAll();
+            try { showToast('已新建分组「' + g + '」，点「+ 新增卡牌」加牌'); } catch (e) {}
+        };
+        try {
+            if (typeof showPrompt === 'function') { showPrompt('新建分组', '', doit, '分组名'); return; }
+        } catch (e) {}
+    }
+    function deckTestDraw() {
+        const box = document.getElementById('pcdl-test-box'); if (!box) return;
+        const c = drawCards(1)[0];
+        box.innerHTML = '<div class="pcdl-test">🎴 试抽：<strong>' + esc(c.f) + '</strong>' +
+            (c.b ? '　<span style="font-size:11px;color:#a08c72">' + esc(c.b) + '</span>' : '') +
+            '<br><span style="font-size:10px;color:#a08c72">' + esc(c.g) + '　·　No.' + (c.i + 1) + '</span></div>';
+    }
+    function openDeckLibrary() {
+        close();
+        try { if (typeof openCardLibrary === 'function') openCardLibrary('chat'); } catch (e) {}
+        setTimeout(function () {
+            const b = document.querySelector('.crl-tab-btn[data-tab="paper"]');
+            if (b) b.click();
+        }, 180);
+    }
+
+    /* ---------- 聊天消息渲染 / 列表预览 ---------- */
+    function parseContent(content) {
+        const m = String(content == null ? '' : content).match(/<pcd>([\s\S]*?)<\/pcd>/);
+        if (!m) return null;
+        try { return JSON.parse(m[1]); } catch (e) { return null; }
+    }
+    function messageHTML(content) {
+        const p = parseContent(content);
+        if (!p) return esc(content || '');
+        const cards = Array.isArray(p.cards) ? p.cards : [];
+        return '<div class="pc-msg" data-pcuid="' + esc(p.uid || '') + '">' +
+            '<div class="pc-msg-h">🃏 ' + esc(p.head || ('抽到 ' + cards.length + ' 张')) + '</div>' +
+            (p.line ? '<div class="pc-msg-line">' + esc(p.line) + '</div>' : '') +
+            (p.groups ? '<div class="pc-msg-groups">' + (p.chips || esc(p.groups)) + '</div>' : '') +
+            cardsRowHTML(cards, !p.reveal, true, 'pc-msg-cards') +
+            '<div class="pc-msg-tip">轻触卡片翻面看牌背 / 再点翻回</div>' +
+            '</div>';
+    }
+    function preview(content) {
+        const p = parseContent(content);
+        return p ? (p.line || p.head || '卡片传讯').slice(0, 40) : '卡片传讯';
+    }
+
+    /* ---------- 对外接口 ---------- */
+    window.PAPER_DECK = PAPER_DECK;
+    window.PAPER_FLAT = BASE;
+    window.openPaperCardPanel = open;
+    window.closePaperCard = close;
+    window.pcBackHome = backHome;
+    window.pcStartChatMode = startChatMode;
+    window.pcOpenDrawHome = drawHome;
+    window.pcSwitchTab = switchTab;
+    window.pcRandomizeProbs = randomizeProbs;
+    window.pcSetProb = setProb;
+    window.pcSetAutoProb = setAutoProb;
+    window.pcSetTempo = setTempo;
+    window.pcRandomDraw = randomDraw;
+    window.pcSpreadReset = spreadReset;
+    window.pcSpreadClear = spreadClear;
+    window.pcMessageHTML = messageHTML;
+    window.pcPreview = preview;
+    window.pcIsChatMode = isChatMode;
+    window.pcOnUserSend = onUserSend;
+    window.pcDrawCount = drawCount;
+    window.pcDrawCards = drawCards;
+    window.pcLiveDeck = liveDeck;
+    window.pcOpenDeckLibrary = openDeckLibrary;
+    window.pcDeckOpenEditor = deckOpenEditor;
+    window.pcDeckCloseEditor = deckCloseEditor;
+    window.pcDeckSave = deckSave;
+    window.pcDeckDel = deckDel;
+    window.pcDeckRestore = deckRestore;
+    window.pcDeckGroup = deckGroup;
+    window.pcDeckMore = deckMore;
+    window.pcDeckTestDraw = deckTestDraw;
+    window.__pcRenderDeckLib = renderDeckLib;
+    window.__pcDeckCount = deckCount;
+    window.__pcDeckRerender = rerenderDeckLib;
+    window.pcDeckBatch = deckBatch;
+    window.pcDeckBatchClose = deckBatchClose;
+    window.pcDeckBatchSave = deckBatchSave;
+    window.pcDeckExport = deckExport;
+    window.pcDeckDedup = deckDedup;
+    window.pcDeckNewGroup = deckNewGroup;
+    window.pcDeckToggleCat = deckToggleCat;
+    window.pcDeckSwitch = deckSwitch;
+    window.pcDeckGoGroup = deckGoGroup;
+    window.pcSrcOpen = srcOpen;
+    window.pcSrcClose = srcClose;
+    window.pcSrcToggleAll = srcToggleAll;
+    window.pcSrcRandom = srcRandom;
+    window.pcSrcApply = srcApply;
+    window.__pcDeckFilterQ = function (v) { DQ.limit = 120; rerenderDeckLib(); };
+
+    document.addEventListener('change', function (e) {
+        if (e.target && e.target.id === 'pc-auto-prob') setAutoProb(e.target.checked);
+    });
+
+    loadAll();
+})();
+</script>
+<script>
+/* ===== 独立版驱动：打开即功能页 + 卡牌内容库 + 卡片回复演示 ===== */
+(function () {
+    'use strict';
+    function $(id) { return document.getElementById(id); }
+    function renderLib() {
+        $('crl-title-text').textContent = '卡牌内容库';
+        $('crl-search').placeholder = '搜索卡牌词 / 释义 / 分组…';
+        $('crl-add-btn').innerHTML = '＋ 新增卡牌';
+        window.__pcRenderDeckLib($('crl-body'), $('crl-search').value);
+    }
+    window.openCardLibrary = function () {
+        $('crl-page').style.display = 'flex';
+        document.querySelectorAll('.crl-tab-btn').forEach(function (b) {
+            b.classList.toggle('active', b.dataset.tab === 'paper');
+        });
+        renderLib();
+    };
+    window.closeCardLibrary = function () {
+        $('crl-page').style.display = 'none';
+        $('pc-panel').classList.add('show');
+        try { window.pcBackHome(); } catch (e) {}
+    };
+    window.closePaperCard = function () { try { window.pcBackHome(); } catch (e) {} };
+
+    document.querySelectorAll('.crl-tab-btn').forEach(function (b) {
+        b.addEventListener('click', function () {
+            if (b.dataset.tab !== 'paper') { showToast('独立版仅包含卡牌内容库'); return; }
+            document.querySelectorAll('.crl-tab-btn').forEach(function (x) { x.classList.remove('active'); });
+            b.classList.add('active'); renderLib();
+        });
+    });
+    var tmr = null;
+    $('crl-search').addEventListener('input', function () {
+        clearTimeout(tmr); var v = this.value;
+        tmr = setTimeout(function () { window.__pcRenderDeckLib($('crl-body'), v); }, 220);
+    });
+    $('crl-btn-dedup').addEventListener('click', function () { window.pcDeckDedup(); });
+    $('crl-group-btn').addEventListener('click', function () { window.pcDeckNewGroup(); });
+    $('crl-btn-import').addEventListener('click', function () { window.pcDeckBatch(); });
+    $('crl-btn-export').addEventListener('click', function () { window.pcDeckExport(); });
+    $('crl-btn-reset').addEventListener('click', function () { window.pcDeckRestore(); });
+    $('crl-add-btn').addEventListener('click', function () { window.pcDeckOpenEditor(); });
+    $('crl-close-btn').addEventListener('click', function () { window.closeCardLibrary(); });
+    window.__crlClearQ = function () { $('crl-search').value = ''; };
+
+    var _switch = window.pcSwitchTab;
+    window.pcSwitchTab = function (t) {
+        _switch(t);
+        var d = $('pc-body-demo'); if (d) d.style.display = (t === 'demo') ? 'flex' : 'none';
+    };
+    window.pcDemoOpen = function () { window.pcOpenDrawHome(); window.pcSwitchTab('demo'); };
+    function esc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) {
+        return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]; }); }
+    function delayMs() {
+        try {
+            var o = JSON.parse(localStorage.getItem('pc_paper_settings_v2') || '{}');
+            var a = Number(o.t && o.t.chatDelayMin), b = Number(o.t && o.t.chatDelayMax);
+            if (!isFinite(a)) a = 5; if (!isFinite(b)) b = 15;
+            a = Math.max(0, a); b = Math.max(a, b);
+            return (a + Math.random() * (b - a)) * 1000;
+        } catch (e) { return 5000 + Math.random() * 10000; }
+    }
+    window.pcDemoSend = function () {
+        var q = ($('pc-demo-q').value || '').trim();
+        if (!q) { showToast('先写下想问的话'); return; }
+        $('pc-demo-q').value = '';
+        var log = $('pc-demo-log');
+        var empty = log.querySelector('.pc-demo-empty'); if (empty) empty.remove();
+        var row = document.createElement('div'); row.className = 'pc-demo-row';
+        row.innerHTML = '<div class="pc-demo-who">你 · ' + new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'}) + '</div>' +
+                        '<div class="pc-demo-me">' + esc(q) + '</div>';
+        log.appendChild(row);
+        var wait = document.createElement('div'); wait.className = 'pc-demo-row pc-demo-ta';
+        wait.innerHTML = '<div class="pc-demo-who">TA</div><div class="pc-demo-wait">正在洗牌…</div>';
+        log.appendChild(wait); log.scrollTop = log.scrollHeight;
+        setTimeout(function () {
+            var n = window.pcDrawCount(), cards = window.pcDrawCards(n);
+            var gs = []; cards.forEach(function (c) { if (gs.indexOf(c.g) < 0) gs.push(c.g); });
+            var chips = gs.map(function (g) { return '<span class="pc-msg-chip">' + esc(g) + '</span>'; }).join('');
+            var payload = { uid: 'demo_' + Date.now(), q: q, cards: cards,
+                head: '抽到 ' + n + ' 张', line: cards.map(function (c) { return c.f; }).join(' · '),
+                groups: gs.join('、'), chips: chips, reveal: false };
+            wait.innerHTML = '<div class="pc-demo-who">TA · 卡片传讯</div>' +
+                window.pcMessageHTML('<pcd>' + JSON.stringify(payload) + '</pcd>');
+            /* 卡片自带内联 onclick 翻面，这里不再重复绑定 */
+            log.scrollTop = log.scrollHeight;
+        }, delayMs());
+    };
+    $('pc-demo-q').addEventListener('keydown', function (e) { if (e.key === 'Enter') window.pcDemoSend(); });
+    window.pcOnUserSend = function () {};
+    window.pcStartChatMode = function () { window.pcDemoOpen(); };
+
+    window.openPaperCardPanel();
+    /* 独立版没有「关闭整个页面」的概念：主页左上 ✕ 隐藏，避免点了没反应的错觉 */
+    var hx = document.querySelector('#pc-home .pc-x'); if (hx) hx.style.display = 'none';
+    var cs = $('pc-chat-state');
+    if (cs) { cs.textContent = '独立版 · 页面内演示'; cs.className = 'pc-mode-state on'; }
+})();
+</script>
+
+<!-- ===== 答案之书 · 内容合集版 ===== -->
+<div id="ab-panel" class="ab-panel">
+  <div class="ab-paper">
+    <div class="ab-bg">The Book of Answers<small>CAT'S INNER VOICE</small></div>
+    <div class="ab-content">
+      <div class="ab-topbar">
+        <button class="ab-x" onclick="abClose()" title="返回">✕</button>
+        <div class="ab-tt"><div class="ab-title">答案之书</div><div class="ab-sub">THE BOOK OF ANSWERS · 内容合集 · 三套条目</div></div>
+        <div class="ab-right"></div>
+      </div>
+      <div class="ab-sets" id="ab-sets"></div>
+      <div class="ab-src-line"><button onclick="abOpenInfo()">内容来源与玩法说明 ›</button></div>
+      <div class="ab-bookwrap">
+        <div class="ab-stage" id="ab-stage">
+          <div class="ab-papers"><i></i><i></i><i></i><i></i></div>
+          <div class="ab-leaf left ab-page" id="ab-left"></div>
+          <div class="ab-leaf right ab-page cover" id="ab-right"></div>
+          <div class="ab-spine"></div>
+          <div class="ab-flywrap" id="ab-flywrap"></div>
+          <div class="ab-flash"></div>
+        </div>
+      </div>
+      <div class="ab-controls">
+        <div class="ab-tip" id="ab-tip"></div>
+        <div class="ab-row">
+          <button class="ab-nav" id="ab-prev" onclick="abStep(-1)" title="上一页">‹</button>
+          <input class="ab-num" id="ab-num" type="number" min="1" max="376" inputmode="numeric" placeholder="页码" autocomplete="off">
+          <button class="ab-go" id="ab-go" onclick="abGo()">翻 页</button>
+          <button class="ab-nav" id="ab-next" onclick="abStep(1)" title="下一页">›</button>
+        </div>
+        <div class="ab-extra">
+          <button class="ab-mini" onclick="abRandom()">✦ 随缘翻一页</button>
+          <button class="ab-mini" onclick="abToCover()">↩ 合上这本书</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ab-mask" id="ab-mask" onclick="if(event.target===this)abCloseInfo()">
+  <div class="ab-dialog">
+    <h3>内容来源与玩法 <span onclick="abCloseInfo()">关闭 ✕</span></h3>
+    <div class="ab-dnotice">本页答案条目全部取自你提供的《答案之书内容合集.html》，按来源分为 A / B / C 三套，未自行创作或改写条目。各版本条目与措辞并不完全一致；答案仅作娱乐与自我提示参考。</div>
+    <h4>玩法</h4>
+    <ol id="ab-usage"></ol>
+    <h4>资料来源</h4>
+    <ul id="ab-sources"></ul>
+    <h4>本套说明</h4>
+    <ul id="ab-setnote"></ul>
+  </div>
+</div>
+
+<script>
+/* ===== 答案之书 · 内容合集版：条目全部来自用户提供的《答案之书内容合集.html》 ===== */
+(function () {
+    'use strict';
+    var SETS = {"A":{"name":"A 套 · 原版译法","short":"A 套","min":1,"max":376,"note":"共 376 条 · 编号 1–376 · 含语态标注","items":[{"n":1,"t":"寻求更多的选择","mood":"中立"},{"n":2,"t":"不","mood":"消极"},{"n":3,"t":"别忽视显而易见的东西","mood":"中立"},{"n":4,"t":"这可能会让你付出代价","mood":"消极"},{"n":5,"t":"结果可能令人吃惊","mood":"中立"},{"n":6,"t":"有决心就能成功","mood":"积极"},{"n":7,"t":"你的行动会使一切得到改善","mood":"积极"},{"n":8,"t":"做一次改变","mood":"积极"},{"n":9,"t":"照别人告诉你的去做","mood":"中立"},{"n":10,"t":"不能保证","mood":"中立"},{"n":11,"t":"答案可能会以另一种形式出现","mood":"中立"},{"n":12,"t":"毫无疑问","mood":"积极"},{"n":13,"t":"这样做会使事情变得有趣","mood":"积极"},{"n":14,"t":"这是肯定的","mood":"积极"},{"n":15,"t":"有可能会伤害到他人","mood":"消极"},{"n":16,"t":"全身心投入将赢得好结果","mood":"积极"},{"n":17,"t":"那只会浪费钱","mood":"消极"},{"n":18,"t":"采取冒险的态度","mood":"积极"},{"n":19,"t":"最好等待","mood":"中立"},{"n":20,"t":"这是肯定的","mood":"积极"},{"n":21,"t":"那超出了你的控制","mood":"消极"},{"n":22,"t":"可能会惹上麻烦","mood":"消极"},{"n":23,"t":"你需要采取主动","mood":"积极"},{"n":24,"t":"似乎没问题","mood":"中立"},{"n":25,"t":"肯定","mood":"积极"},{"n":26,"t":"不要在意","mood":"中立"},{"n":27,"t":"尽早做好它","mood":"积极"},{"n":28,"t":"你终会发现你想知道的一切","mood":"积极"},{"n":29,"t":"除非你独自一人","mood":"中立"},{"n":30,"t":"是，但不要强求","mood":"中立"},{"n":31,"t":"你需要去适应","mood":"中立"},{"n":32,"t":"明天再来试试","mood":"中立"},{"n":33,"t":"以更放松的态度去面对","mood":"积极"},{"n":34,"t":"你需要考虑其他方法","mood":"中立"},{"n":35,"t":"在习惯中接受一些改变","mood":"中立"},{"n":36,"t":"要知道选择太多和太少一样很难","mood":"中立"},{"n":37,"t":"别浪费时间了","mood":"消极"},{"n":38,"t":"是","mood":"积极"},{"n":39,"t":"花更多时间来决定","mood":"中立"},{"n":40,"t":"当然","mood":"积极"},{"n":41,"t":"灵活应对","mood":"积极"},{"n":42,"t":"似乎已成事实","mood":"中立"},{"n":43,"t":"看开一点","mood":"中立"},{"n":44,"t":"问问你的异性同事","mood":"中立"},{"n":45,"t":"柳暗花明又一村","mood":"积极"},{"n":46,"t":"你会后悔的","mood":"消极"},{"n":47,"t":"避免第一个解决办法","mood":"中立"},{"n":48,"t":"随它去吧","mood":"中立"},{"n":49,"t":"不","mood":"消极"},{"n":50,"t":"过段时间就不那么重要了","mood":"中立"},{"n":51,"t":"拭目以待","mood":"中立"},{"n":52,"t":"相信你最初的想法","mood":"积极"},{"n":53,"t":"请不要抗拒","mood":"中立"},{"n":54,"t":"这会带来好运","mood":"积极"},{"n":55,"t":"那一定很棒","mood":"积极"},{"n":56,"t":"把它记下来","mood":"中立"},{"n":57,"t":"不要迫于压力草率行事","mood":"中立"},{"n":58,"t":"可能发生小意外","mood":"消极"},{"n":59,"t":"研究并享受它","mood":"积极"},{"n":60,"t":"这具有重要意义","mood":"积极"},{"n":61,"t":"防备意外发生","mood":"中立"},{"n":62,"t":"一切将依赖于你的选择","mood":"中立"},{"n":63,"t":"转移注意力","mood":"中立"},{"n":64,"t":"离开","mood":"中立"},{"n":65,"t":"你需要其他人的帮助","mood":"中立"},{"n":66,"t":"这有些特别","mood":"中立"},{"n":67,"t":"过段时间就不那么重要了","mood":"中立"},{"n":68,"t":"不要犹豫","mood":"积极"},{"n":69,"t":"先完成其他事","mood":"中立"},{"n":70,"t":"给自己一点时间","mood":"中立"},{"n":71,"t":"现在你就能","mood":"积极"},{"n":72,"t":"那不值得纠结","mood":"中立"},{"n":73,"t":"那将影响别人对你的看法","mood":"中立"},{"n":74,"t":"照别人说的去做","mood":"中立"},{"n":75,"t":"转移你的注意力","mood":"中立"},{"n":76,"t":"你会失望的","mood":"消极"},{"n":77,"t":"最好关注你的工作","mood":"中立"},{"n":78,"t":"形式尚不明朗","mood":"中立"},{"n":79,"t":"不要抱成见","mood":"中立"},{"n":80,"t":"你必须现在就行动","mood":"积极"},{"n":81,"t":"那可能很难，但值得","mood":"积极"},{"n":82,"t":"付出就会有回报","mood":"积极"},{"n":83,"t":"对意外要有思想准备","mood":"中立"},{"n":84,"t":"更细心地去倾听，你就会知道","mood":"积极"},{"n":85,"t":"且行且思","mood":"中立"},{"n":86,"t":"你有能力以任何方式改善","mood":"积极"},{"n":87,"t":"这是你不会忘记的事物","mood":"中立"},{"n":88,"t":"履行你的义务","mood":"中立"},{"n":89,"t":"快刀斩乱麻","mood":"积极"},{"n":90,"t":"别在这上面下赌注","mood":"消极"},{"n":91,"t":"也许吧","mood":"中立"},{"n":92,"t":"专注于你的家庭生活","mood":"中立"},{"n":93,"t":"绝对不","mood":"消极"},{"n":94,"t":"等待","mood":"中立"},{"n":95,"t":"别犯傻了","mood":"消极"},{"n":96,"t":"可能吧","mood":"中立"},{"n":97,"t":"表示怀疑","mood":"消极"},{"n":98,"t":"意义非凡","mood":"积极"},{"n":99,"t":"那可能非同寻常","mood":"中立"},{"n":100,"t":"不可能失败","mood":"积极"},{"n":101,"t":"你需要了解更多","mood":"中立"},{"n":102,"t":"情况很快会有变化","mood":"中立"},{"n":103,"t":"这并不重要","mood":"中立"},{"n":104,"t":"这会带来好运","mood":"积极"},{"n":105,"t":"顺其自然","mood":"中立"},{"n":106,"t":"问问你最好的朋友","mood":"中立"},{"n":107,"t":"这时不要再自找麻烦","mood":"消极"},{"n":108,"t":"晚一点处理","mood":"中立"},{"n":109,"t":"尝试一种更可能的解决方案","mood":"积极"},{"n":110,"t":"这时不要再自找麻烦","mood":"消极"},{"n":111,"t":"先做重要的事儿","mood":"积极"},{"n":112,"t":"投硬币来做决定吧","mood":"中立"},{"n":113,"t":"明天再来试试","mood":"中立"},{"n":114,"t":"这不可能失败","mood":"积极"},{"n":115,"t":"这也取决于另一种情况","mood":"中立"},{"n":116,"t":"是，但不要强求","mood":"中立"},{"n":117,"t":"你最终能如愿","mood":"积极"},{"n":118,"t":"可行","mood":"积极"},{"n":119,"t":"答案就在你家窗外","mood":"中立"},{"n":120,"t":"现在你比以往任何时候都清楚","mood":"积极"},{"n":121,"t":"只需说声“谢谢”","mood":"中立"},{"n":122,"t":"或许，等你再年长些就明白了","mood":"中立"},{"n":123,"t":"这将轰动一时","mood":"积极"},{"n":124,"t":"放手一搏","mood":"积极"},{"n":125,"t":"你会后悔的","mood":"消极"},{"n":126,"t":"事情会朝目标发展","mood":"积极"},{"n":127,"t":"答案可能会以另一种形式出现","mood":"中立"},{"n":128,"t":"把它记下来","mood":"中立"},{"n":129,"t":"更细心去了解，你就知道该怎么做了","mood":"积极"},{"n":130,"t":"需要做更多的努力","mood":"积极"},{"n":131,"t":"等待一个更好的机会","mood":"中立"},{"n":132,"t":"数到5，再试一次","mood":"积极"},{"n":133,"t":"也许会很难，但值得","mood":"积极"},{"n":134,"t":"你不得不妥协","mood":"中立"},{"n":135,"t":"很快就能解决","mood":"积极"},{"n":136,"t":"十分确定","mood":"积极"},{"n":137,"t":"寻求更多的选择","mood":"中立"},{"n":138,"t":"这还不确定","mood":"中立"},{"n":139,"t":"谨慎处理","mood":"中立"},{"n":140,"t":"全力以赴","mood":"积极"},{"n":141,"t":"给自己一点时间","mood":"中立"},{"n":142,"t":"研究并享受它","mood":"积极"},{"n":143,"t":"重新考虑你的做法","mood":"中立"},{"n":144,"t":"是的","mood":"积极"},{"n":145,"t":"问问你的母亲吧","mood":"中立"},{"n":146,"t":"如果你独自一人就不要","mood":"中立"},{"n":147,"t":"或许，当你长大些就知道了","mood":"中立"},{"n":148,"t":"无需担忧","mood":"中立"},{"n":149,"t":"保持开放的心态","mood":"积极"},{"n":150,"t":"你会为自己所做的感到高兴的","mood":"积极"},{"n":151,"t":"发挥你的想象力","mood":"积极"},{"n":152,"t":"献出你的一切","mood":"积极"},{"n":153,"t":"顺从你的意愿","mood":"中立"},{"n":154,"t":"问问你的母亲吧","mood":"中立"},{"n":155,"t":"当然","mood":"积极"},{"n":156,"t":"先做好自己的事","mood":"中立"},{"n":157,"t":"不要怀疑","mood":"积极"},{"n":158,"t":"是时候做新打算了","mood":"积极"},{"n":159,"t":"绝对不","mood":"消极"},{"n":160,"t":"不要忽略显而易见的","mood":"中立"},{"n":161,"t":"省省力气吧","mood":"消极"},{"n":162,"t":"合作将是关键","mood":"积极"},{"n":163,"t":"此时不宜","mood":"消极"},{"n":164,"t":"可能会惹上麻烦","mood":"消极"},{"n":165,"t":"莫等待","mood":"积极"},{"n":166,"t":"你可能不得不放弃其他的东西","mood":"中立"},{"n":167,"t":"遵守规则","mood":"中立"},{"n":168,"t":"相关问题可能会出现","mood":"消极"},{"n":169,"t":"事情将遂你心意","mood":"积极"},{"n":170,"t":"赌一把","mood":"中立"},{"n":171,"t":"以后再处理","mood":"中立"},{"n":172,"t":"结果是乐观的","mood":"积极"},{"n":173,"t":"期待解决","mood":"积极"},{"n":174,"t":"没说对","mood":"消极"},{"n":175,"t":"注意细节","mood":"中立"},{"n":176,"t":"你的行动会使一切变好","mood":"积极"},{"n":177,"t":"答案就在公园里","mood":"中立"},{"n":178,"t":"清除你自身的障碍","mood":"积极"},{"n":179,"t":"这是不明智的","mood":"消极"},{"n":180,"t":"将需要大量的努力","mood":"中立"},{"n":181,"t":"不要勉强自己","mood":"中立"},{"n":182,"t":"是时候做打算了","mood":"积极"},{"n":183,"t":"问问你最好的朋友","mood":"中立"},{"n":184,"t":"享受这次体验","mood":"积极"},{"n":185,"t":"要付出坚持不懈的努力","mood":"积极"},{"n":186,"t":"那仍然无法预测","mood":"中立"},{"n":187,"t":"结果是乐观的","mood":"积极"},{"n":188,"t":"毋庸置疑","mood":"积极"},{"n":189,"t":"多花点时间来做决定","mood":"中立"},{"n":190,"t":"只做这一次","mood":"中立"},{"n":191,"t":"这是不明智的","mood":"消极"},{"n":192,"t":"做些改变","mood":"积极"},{"n":193,"t":"可行","mood":"积极"},{"n":194,"t":"不","mood":"消极"},{"n":195,"t":"先做好其他事","mood":"中立"},{"n":196,"t":"不要陷入到情绪之中","mood":"中立"},{"n":197,"t":"相信你的直觉","mood":"积极"},{"n":198,"t":"采取智者的建议","mood":"中立"},{"n":199,"t":"情况不明了","mood":"中立"},{"n":200,"t":"柳暗花明又一村","mood":"积极"},{"n":201,"t":"是时候做些打算了","mood":"积极"},{"n":202,"t":"你不得不妥协","mood":"中立"},{"n":203,"t":"明天再来试试","mood":"中立"},{"n":204,"t":"列出否定的理由","mood":"中立"},{"n":205,"t":"这并不重要","mood":"中立"},{"n":206,"t":"此时不宜","mood":"消极"},{"n":207,"t":"专注于你的家庭生活","mood":"中立"},{"n":208,"t":"要有耐心","mood":"中立"},{"n":209,"t":"寻求更多选择","mood":"中立"},{"n":210,"t":"一笑置之","mood":"中立"},{"n":211,"t":"继续","mood":"积极"},{"n":212,"t":"你必须随机应变","mood":"中立"},{"n":213,"t":"别浪费时间了","mood":"消极"},{"n":214,"t":"别忘记享受乐趣","mood":"积极"},{"n":215,"t":"那是在浪费金钱","mood":"消极"},{"n":216,"t":"重要的优先","mood":"积极"},{"n":217,"t":"事情会朝目标发展","mood":"积极"},{"n":218,"t":"为了做出最好的决定，务必保持冷静","mood":"积极"},{"n":219,"t":"尝试一个更没把握的方法","mood":"中立"},{"n":220,"t":"清除你自身的障碍","mood":"积极"},{"n":221,"t":"那可能已成事实","mood":"中立"},{"n":222,"t":"最好等待","mood":"中立"},{"n":223,"t":"是","mood":"积极"},{"n":224,"t":"你必须马上行动","mood":"积极"},{"n":225,"t":"不要妄下赌注","mood":"中立"},{"n":226,"t":"接受一些改变","mood":"中立"},{"n":227,"t":"那可能已无法改变","mood":"消极"},{"n":228,"t":"相信你的直觉","mood":"积极"},{"n":229,"t":"一些援助能确保你成功","mood":"积极"},{"n":230,"t":"这也取决于另一种情况","mood":"中立"},{"n":231,"t":"你肯定会获得支持","mood":"积极"},{"n":232,"t":"只做一次","mood":"中立"},{"n":233,"t":"遵循智者的建议","mood":"中立"},{"n":234,"t":"如你所愿","mood":"积极"},{"n":235,"t":"当局者迷","mood":"中立"},{"n":236,"t":"无论你怎么做，结果依旧","mood":"中立"},{"n":237,"t":"相信你最初的想法","mood":"积极"},{"n":238,"t":"你需要去适应","mood":"中立"},{"n":239,"t":"先主后次","mood":"中立"},{"n":240,"t":"这会让你付出代价","mood":"消极"},{"n":241,"t":"尽早行动","mood":"积极"},{"n":242,"t":"寻求更多选择","mood":"中立"},{"n":243,"t":"有可能会伤害到他人","mood":"消极"},{"n":244,"t":"你现在比以往任何时候都清楚","mood":"积极"},{"n":245,"t":"极可能发生变故","mood":"消极"},{"n":246,"t":"毫无疑问","mood":"积极"},{"n":247,"t":"事情会朝目标发展","mood":"积极"},{"n":248,"t":"带着好奇去探索","mood":"积极"},{"n":249,"t":"做一次改变","mood":"积极"},{"n":250,"t":"列出这样做的理由","mood":"中立"},{"n":251,"t":"马上停下来","mood":"消极"},{"n":252,"t":"这不是很确定","mood":"中立"},{"n":253,"t":"不用担心","mood":"中立"},{"n":254,"t":"先做好自己的事","mood":"中立"},{"n":255,"t":"情况很快就会有变化","mood":"中立"},{"n":256,"t":"不要告诉别人","mood":"中立"},{"n":257,"t":"你不需要其他人的帮助","mood":"中立"},{"n":258,"t":"那将是一件乐事","mood":"积极"},{"n":259,"t":"要知道选择太多或太少都很难","mood":"中立"},{"n":260,"t":"现在你就行","mood":"积极"},{"n":261,"t":"那仍然无法预测","mood":"中立"},{"n":262,"t":"列出理由","mood":"中立"},{"n":263,"t":"不要迫于压力草率行动","mood":"中立"},{"n":264,"t":"你需要采取行动","mood":"积极"},{"n":265,"t":"不要等待","mood":"积极"},{"n":266,"t":"问问你的异性同事","mood":"中立"},{"n":267,"t":"履行你的义务","mood":"中立"},{"n":268,"t":"你能以任何方式改善现状","mood":"积极"},{"n":269,"t":"为了做出最好的决定，请保持冷静","mood":"积极"},{"n":270,"t":"你会为此感到高兴","mood":"积极"},{"n":271,"t":"放弃之前的想法","mood":"消极"},{"n":272,"t":"顺从你的意愿","mood":"中立"},{"n":273,"t":"你不会忘记这些","mood":"中立"},{"n":274,"t":"不要在乎","mood":"中立"},{"n":275,"t":"一些援助有利于你成功","mood":"积极"},{"n":276,"t":"谨慎对待","mood":"中立"},{"n":277,"t":"投硬币来做决定吧","mood":"中立"},{"n":278,"t":"放弃你现在的想法","mood":"消极"},{"n":279,"t":"有理由保持乐观","mood":"积极"},{"n":280,"t":"带着好奇去探索","mood":"积极"},{"n":281,"t":"你会发现自己难以妥协","mood":"中立"},{"n":282,"t":"是时候做新的打算了","mood":"积极"},{"n":283,"t":"改变不会很快发生","mood":"中立"},{"n":284,"t":"有些障碍需要克服","mood":"中立"},{"n":285,"t":"耐心点","mood":"中立"},{"n":286,"t":"果断放弃","mood":"消极"},{"n":287,"t":"最好把心思放在工作上","mood":"中立"},{"n":288,"t":"要做就做好，否则就不要去做","mood":"中立"},{"n":289,"t":"深表怀疑","mood":"消极"},{"n":290,"t":"最好的解决方法可能不太明显","mood":"中立"},{"n":291,"t":"已超出你的控制","mood":"消极"},{"n":292,"t":"你已然发现自己无法妥协","mood":"中立"},{"n":293,"t":"一笑置之","mood":"中立"},{"n":294,"t":"看看会发生什么","mood":"中立"},{"n":295,"t":"当然","mood":"积极"},{"n":296,"t":"你需要更多信息","mood":"中立"},{"n":297,"t":"别忘记享受乐趣","mood":"积极"},{"n":298,"t":"数到5，再问一次","mood":"中立"},{"n":299,"t":"开阔视野","mood":"积极"},{"n":300,"t":"明天再来试试","mood":"中立"},{"n":301,"t":"注意细节","mood":"中立"},{"n":302,"t":"看得更清楚些","mood":"积极"},{"n":303,"t":"结果可能会令人震惊","mood":"中立"},{"n":304,"t":"节省你的精力吧","mood":"中立"},{"n":305,"t":"管它呢","mood":"中立"},{"n":306,"t":"无论你做什么，结果依旧","mood":"中立"},{"n":307,"t":"发挥你的想象力","mood":"积极"},{"n":308,"t":"那将引起一些纷争","mood":"消极"},{"n":309,"t":"相关问题可能会浮出水面","mood":"消极"},{"n":310,"t":"遵循其他人的建议","mood":"中立"},{"n":311,"t":"改变将不会很快发生","mood":"中立"},{"n":312,"t":"值得付出努力","mood":"积极"},{"n":313,"t":"问问你最好的朋友","mood":"中立"},{"n":314,"t":"似乎已成事实","mood":"中立"},{"n":315,"t":"负起责任来","mood":"积极"},{"n":316,"t":"你终会搞清楚你想知道的一切","mood":"积极"},{"n":317,"t":"且行且思","mood":"中立"},{"n":318,"t":"如果做就做好，否则就不要做","mood":"中立"},{"n":319,"t":"不值得一争","mood":"中立"},{"n":320,"t":"问问你的异性同事","mood":"中立"},{"n":321,"t":"遵守规则","mood":"中立"},{"n":322,"t":"你肯定会获得支持","mood":"积极"},{"n":323,"t":"管它呢","mood":"中立"},{"n":324,"t":"问问你的父亲吧","mood":"中立"},{"n":325,"t":"向别人倾诉","mood":"中立"},{"n":326,"t":"看来还行","mood":"中立"},{"n":327,"t":"绝不","mood":"消极"},{"n":328,"t":"等待一个更好的提议","mood":"中立"},{"n":329,"t":"绝不","mood":"消极"},{"n":330,"t":"可能会惹上麻烦","mood":"消极"},{"n":331,"t":"你可能会遭遇反对","mood":"消极"},{"n":332,"t":"这会是一件乐事","mood":"积极"},{"n":333,"t":"告诉某人那对你意味着什么","mood":"中立"},{"n":334,"t":"这会影响别人对你的看法","mood":"中立"},{"n":335,"t":"一切都取决于你的选择","mood":"中立"},{"n":336,"t":"把这看作一个时机","mood":"积极"},{"n":337,"t":"不要陷入你的情绪","mood":"中立"},{"n":338,"t":"你一定得这么做","mood":"积极"},{"n":339,"t":"享受这个过程","mood":"积极"},{"n":340,"t":"不识庐山真面目，只缘身在此山中","mood":"中立"},{"n":341,"t":"不要勉强自己","mood":"中立"},{"n":342,"t":"等待","mood":"中立"},{"n":343,"t":"最好的解决方法可能并不明显","mood":"中立"},{"n":344,"t":"问问你的父亲吧","mood":"中立"},{"n":345,"t":"那一定很棒","mood":"积极"},{"n":346,"t":"你可能不得不放弃其他一些东西","mood":"中立"},{"n":347,"t":"你不会失望的","mood":"积极"},{"n":348,"t":"是时候走了","mood":"中立"},{"n":349,"t":"先做好自己的事","mood":"中立"},{"n":350,"t":"列出否定的理由","mood":"中立"},{"n":351,"t":"你需要考虑其他方法","mood":"中立"},{"n":352,"t":"值得付出努力","mood":"积极"},{"n":353,"t":"这肯定会使事情变得有趣","mood":"积极"},{"n":354,"t":"欣然接受","mood":"积极"},{"n":355,"t":"遵循其他人的意见","mood":"中立"},{"n":356,"t":"做一次改变","mood":"积极"},{"n":357,"t":"说出来吧","mood":"积极"},{"n":358,"t":"投硬币来做决定吧","mood":"中立"},{"n":359,"t":"先主后次","mood":"中立"},{"n":360,"t":"慷慨大度些","mood":"积极"},{"n":361,"t":"只需要说声“谢谢”","mood":"中立"},{"n":362,"t":"重新考虑你的方法","mood":"中立"},{"n":363,"t":"你必须随机应变","mood":"中立"},{"n":364,"t":"采取冒险的态度","mood":"积极"},{"n":365,"t":"你可能遭遇反对","mood":"消极"},{"n":366,"t":"你能否不要抗拒","mood":"中立"},{"n":367,"t":"放弃之前的打算","mood":"消极"},{"n":368,"t":"有障碍需要克服","mood":"中立"},{"n":369,"t":"做出改变","mood":"积极"},{"n":370,"t":"无法保证","mood":"中立"},{"n":371,"t":"算了吧","mood":"消极"},{"n":372,"t":"合作是关键","mood":"积极"},{"n":373,"t":"把这看作一次机会","mood":"积极"},{"n":374,"t":"别再犹豫了","mood":"积极"},{"n":375,"t":"保守你的秘密","mood":"中立"},{"n":376,"t":"采取冒险的态度","mood":"积极"}]},"B":{"name":"B 套 · 网络短句汇编","short":"B 套","min":0,"max":137,"note":"共 138 条 · 编号 0–137 · 末条为原页面截断占位","items":[{"n":0,"t":"别太赶了","trunc":false},{"n":1,"t":"别想了","trunc":false},{"n":2,"t":"不","trunc":false},{"n":3,"t":"不然呢？","trunc":false},{"n":4,"t":"不要抱期望","trunc":false},{"n":5,"t":"要求不要太高","trunc":false},{"n":6,"t":"这是必然的，不要抗拒","trunc":false},{"n":7,"t":"不要浪费精力","trunc":false},{"n":8,"t":"不要浪费你的时间了","trunc":false},{"n":9,"t":"不要做得过火了","trunc":false},{"n":10,"t":"不用担心","trunc":false},{"n":11,"t":"车到山前必有路","trunc":false},{"n":12,"t":"答案就在你身边","trunc":false},{"n":13,"t":"大胆一点","trunc":false},{"n":14,"t":"大方一点","trunc":false},{"n":15,"t":"等等","trunc":false},{"n":16,"t":"放轻松点，慢慢来","trunc":false},{"n":17,"t":"管他呢","trunc":false},{"n":18,"t":"毫无疑问","trunc":false},{"n":19,"t":"好运将会降临","trunc":false},{"n":20,"t":"忽略了一件显而易见的事","trunc":false},{"n":21,"t":"换个角度想想","trunc":false},{"n":22,"t":"会付出代价","trunc":false},{"n":23,"t":"会感到庆幸","trunc":false},{"n":24,"t":"会很不顺利","trunc":false},{"n":25,"t":"会很顺利","trunc":false},{"n":26,"t":"会后悔的","trunc":false},{"n":27,"t":"会失去自我","trunc":false},{"n":28,"t":"会特别顺利","trunc":false},{"n":29,"t":"继续前进","trunc":false},{"n":30,"t":"结果可能让人惊讶","trunc":false},{"n":31,"t":"绝对不","trunc":false},{"n":32,"t":"肯定的","trunc":false},{"n":33,"t":"没错","trunc":false},{"n":34,"t":"木已成舟","trunc":false},{"n":35,"t":"你必须解决一些相关的问题","trunc":false},{"n":36,"t":"不会后悔的","trunc":false},{"n":37,"t":"不会失望的","trunc":false},{"n":38,"t":"得真正地努力一下","trunc":false},{"n":39,"t":"还有别的选择","trunc":false},{"n":40,"t":"你将取得成功","trunc":false},{"n":41,"t":"你说了算","trunc":false},{"n":42,"t":"你心里已经有答案了","trunc":false},{"n":43,"t":"需要合作","trunc":false},{"n":44,"t":"需要冒险","trunc":false},{"n":45,"t":"要主动","trunc":false},{"n":46,"t":"你在开玩笑吗？","trunc":false},{"n":47,"t":"你做什么都没用","trunc":false},{"n":48,"t":"奇迹即将降临","trunc":false},{"n":49,"t":"千万别信","trunc":false},{"n":50,"t":"千万不能失败","trunc":false},{"n":51,"t":"全力以赴","trunc":false},{"n":52,"t":"认清现实吧","trunc":false},{"n":53,"t":"三思而后行","trunc":false},{"n":54,"t":"尚待时日","trunc":false},{"n":55,"t":"省点力气吧","trunc":false},{"n":56,"t":"时机未到","trunc":false},{"n":57,"t":"听听别人怎么说","trunc":false},{"n":58,"t":"听听专家的意见","trunc":false},{"n":59,"t":"万一错过，就没这个机会了","trunc":false},{"n":60,"t":"为什么不呢?","trunc":false},{"n":61,"t":"问问你的亲人","trunc":false},{"n":62,"t":"问问自己，为什么要这么干","trunc":false},{"n":63,"t":"先做点别的","trunc":false},{"n":64,"t":"现在还说不清","trunc":false},{"n":65,"t":"现在你可以","trunc":false},{"n":66,"t":"相信你的自觉","trunc":false},{"n":67,"t":"相信你最初的想法","trunc":false},{"n":68,"t":"想得美","trunc":false},{"n":69,"t":"想想有没有机会","trunc":false},{"n":70,"t":"休息一下就好了","trunc":false},{"n":71,"t":"学会妥协","trunc":false},{"n":72,"t":"眼光长远一点","trunc":false},{"n":73,"t":"要变通","trunc":false},{"n":74,"t":"要有点耐心","trunc":false},{"n":75,"t":"要知足","trunc":false},{"n":76,"t":"要抓住问题的关键","trunc":false},{"n":77,"t":"一定会有好结果的","trunc":false},{"n":78,"t":"一笑了之","trunc":false},{"n":79,"t":"以后再说","trunc":false},{"n":80,"t":"用尽一切办法去努力","trunc":false},{"n":81,"t":"有","trunc":false},{"n":82,"t":"有可能","trunc":false},{"n":83,"t":"仔细想想再说","trunc":false},{"n":84,"t":"再等等看","trunc":false},{"n":85,"t":"障碍重重","trunc":false},{"n":86,"t":"这辈子都不可能","trunc":false},{"n":87,"t":"这不可取","trunc":false},{"n":88,"t":"这不切实际","trunc":false},{"n":89,"t":"这不值得努力","trunc":false},{"n":90,"t":"这会影响你的形象","trunc":false},{"n":91,"t":"这件事会很麻烦","trunc":false},{"n":92,"t":"这件事你说了不算","trunc":false},{"n":93,"t":"这没什么意义","trunc":false},{"n":94,"t":"这取决于你的行动","trunc":false},{"n":95,"t":"这是肯定的","trunc":false},{"n":96,"t":"没法保证","trunc":false},{"n":97,"t":"无法预测","trunc":false},{"n":98,"t":"这是在浪费金钱","trunc":false},{"n":99,"t":"没什么好结果","trunc":false},{"n":100,"t":"值得奋斗","trunc":false},{"n":101,"t":"这种事情不要告诉别人","trunc":false},{"n":102,"t":"只有一次机会","trunc":false},{"n":103,"t":"总所周知","trunc":false},{"n":104,"t":"重新想想","trunc":false},{"n":105,"t":"注意细节","trunc":false},{"n":106,"t":"做最坏的打算","trunc":false},{"n":107,"t":"不要纠结了","trunc":false},{"n":108,"t":"毫无道理","trunc":false},{"n":109,"t":"结果会让你惊喜","trunc":false},{"n":110,"t":"这不是你想要的","trunc":false},{"n":111,"t":"寻找机会就行","trunc":false},{"n":112,"t":"不要自作多情","trunc":false},{"n":113,"t":"最后一次机会","trunc":false},{"n":114,"t":"顺其自然","trunc":false},{"n":115,"t":"学会释然","trunc":false},{"n":116,"t":"别瞎折腾了","trunc":false},{"n":117,"t":"再过几年","trunc":false},{"n":118,"t":"不要忽视自己的力量","trunc":false},{"n":119,"t":"尽在掌握之中","trunc":false},{"n":120,"t":"地点不合适","trunc":false},{"n":121,"t":"不作死就不会死","trunc":false},{"n":122,"t":"当局者迷","trunc":false},{"n":123,"t":"另择吉日","trunc":false},{"n":124,"t":"时间会证明一切","trunc":false},{"n":125,"t":"并非永恒","trunc":false},{"n":126,"t":"倾听你内心的声音","trunc":false},{"n":127,"t":"如你所愿","trunc":false},{"n":128,"t":"遇上方知有","trunc":false},{"n":129,"t":"不值得","trunc":false},{"n":130,"t":"见好就收","trunc":false},{"n":131,"t":"你猜","trunc":false},{"n":132,"t":"时机尚不成熟","trunc":false},{"n":133,"t":"这难以置信","trunc":false},{"n":134,"t":"与你无关","trunc":false},{"n":135,"t":"放手","trunc":false},{"n":136,"t":"拭目以待","trunc":false},{"n":137,"t":"（原页面条目在此截断，未获取到后续内容）","trunc":true}]},"C":{"name":"C 套 · 中文译本语录集","short":"C 套","min":1,"max":188,"note":"共 188 条 · 语录标题＋补充说明（部分条目原页面无补充）","items":[{"n":1,"t":"别失望","sub":"不必为你无法控制的事情而担心"},{"n":2,"t":"不要忘记微笑","sub":""},{"n":3,"t":"阳光","sub":""},{"n":4,"t":"挥手道别","sub":"你失去的某天会以不同的方式归还于你"},{"n":5,"t":"你的状态很不对","sub":"这是个麻烦；你或许需要突破"},{"n":6,"t":"放弃","sub":"你唯一能做的只有把握现在"},{"n":7,"t":"学会珍惜","sub":""},{"n":8,"t":"改变心情","sub":""},{"n":9,"t":"一直走下去","sub":""},{"n":10,"t":"优秀","sub":"坚持不懈的努力"},{"n":11,"t":"不适合","sub":""},{"n":12,"t":"愉快生活","sub":""},{"n":13,"t":"终点","sub":""},{"n":14,"t":"换一个方向","sub":""},{"n":15,"t":"岁月静好","sub":"放轻松，这很简单"},{"n":16,"t":"早点儿开始","sub":""},{"n":17,"t":"不要后悔","sub":"也许会迟到"},{"n":18,"t":"沉默","sub":"好像平凡了点"},{"n":19,"t":"糊涂一点更好","sub":""},{"n":20,"t":"善待自己","sub":""},{"n":21,"t":"放手","sub":""},{"n":22,"t":"呼吸一下新鲜空气","sub":""},{"n":23,"t":"没有答案","sub":""},{"n":24,"t":"感恩，运气会越来越好","sub":""},{"n":25,"t":"原谅","sub":""},{"n":26,"t":"自我欣赏","sub":""},{"n":27,"t":"复杂的事情简单做","sub":""},{"n":28,"t":"学会自己保护自己","sub":""},{"n":29,"t":"奇迹","sub":"给自己一个肯定"},{"n":30,"t":"甜","sub":""},{"n":31,"t":"摆正心态","sub":"种下满足，收获幸福"},{"n":32,"t":"把握现在","sub":""},{"n":33,"t":"学会好奇","sub":""},{"n":34,"t":"最美丽的一天","sub":""},{"n":35,"t":"彼岸","sub":""},{"n":36,"t":"停止","sub":""},{"n":37,"t":"坚强","sub":""},{"n":38,"t":"永恒","sub":""},{"n":39,"t":"常常是最后一把钥匙打开了神殿门","sub":""},{"n":40,"t":"不要刻意隐藏","sub":""},{"n":41,"t":"停止悲伤","sub":"不要刻意压抑"},{"n":42,"t":"背不动的就放下","sub":""},{"n":43,"t":"不要怕","sub":""},{"n":44,"t":"安静","sub":""},{"n":45,"t":"想念","sub":""},{"n":46,"t":"驻足静立","sub":""},{"n":47,"t":"活下去","sub":""},{"n":48,"t":"去爱","sub":""},{"n":49,"t":"回家","sub":""},{"n":50,"t":"未解之谜","sub":""},{"n":51,"t":"相遇","sub":""},{"n":52,"t":"陌生人","sub":""},{"n":53,"t":"告别","sub":""},{"n":54,"t":"本能","sub":""},{"n":55,"t":"取暖","sub":""},{"n":56,"t":"重逢","sub":""},{"n":57,"t":"不要去忘记","sub":""},{"n":58,"t":"自信起来吧","sub":""},{"n":59,"t":"爱","sub":""},{"n":60,"t":"接受那些消失的","sub":""},{"n":61,"t":"到此为止","sub":""},{"n":62,"t":"一步之遥","sub":""},{"n":63,"t":"保存","sub":""},{"n":64,"t":"虚无的关系","sub":""},{"n":65,"t":"时间有限","sub":""},{"n":66,"t":"迷失的世界","sub":""},{"n":67,"t":"慢下来","sub":""},{"n":68,"t":"可怕","sub":""},{"n":69,"t":"了不起","sub":""},{"n":70,"t":"一个正在到来的晴天","sub":""},{"n":71,"t":"好天气","sub":""},{"n":72,"t":"旧梦","sub":""},{"n":73,"t":"挽留","sub":""},{"n":74,"t":"逆水行舟","sub":""},{"n":75,"t":"被排挤","sub":""},{"n":76,"t":"可以期待的未来","sub":""},{"n":77,"t":"平平安安","sub":""},{"n":78,"t":"挥别错的","sub":""},{"n":79,"t":"朴素","sub":""},{"n":80,"t":"成为了事实","sub":""},{"n":81,"t":"萌芽","sub":""},{"n":82,"t":"有一些重要的事","sub":""},{"n":83,"t":"让你泪流满脸的","sub":""},{"n":84,"t":"不知所措","sub":""},{"n":85,"t":"给人依赖","sub":""},{"n":86,"t":"对未知前途的期盼","sub":""},{"n":87,"t":"用平淡的心态去追求","sub":""},{"n":88,"t":"一切皆有可能","sub":""},{"n":89,"t":"控制自己的情绪","sub":""},{"n":90,"t":"一切顺其自然","sub":""},{"n":91,"t":"一条没有鲜花的道路","sub":""},{"n":92,"t":"得不到别人的认同","sub":""},{"n":93,"t":"暂且不要判断","sub":""},{"n":94,"t":"不要一成不变","sub":""},{"n":95,"t":"学会认错","sub":""},{"n":96,"t":"你祈求的一切顺利","sub":""},{"n":97,"t":"享受全心全意的付出","sub":""},{"n":98,"t":"站在了最重要的地方","sub":""},{"n":99,"t":"捕风捉影","sub":""},{"n":100,"t":"欢天喜地","sub":""},{"n":101,"t":"轮回","sub":""},{"n":102,"t":"你无法继续沉睡","sub":""},{"n":103,"t":"得到了多数的支持","sub":""},{"n":104,"t":"十分好的预感","sub":""},{"n":105,"t":"背叛","sub":""},{"n":106,"t":"学会改变什么","sub":"最划算的交换"},{"n":107,"t":"差不多得了","sub":""},{"n":108,"t":"开心的肯定","sub":""},{"n":109,"t":"必不可少","sub":""},{"n":110,"t":"试着慷慨一点儿","sub":""},{"n":111,"t":"同意","sub":""},{"n":112,"t":"值得去做的事","sub":""},{"n":113,"t":"是","sub":""},{"n":114,"t":"好的指引","sub":""},{"n":115,"t":"不必耿耿于怀","sub":""},{"n":116,"t":"放在心里吧，这样比较好点","sub":""},{"n":117,"t":"不用伪装到面目全非","sub":""},{"n":118,"t":"别压抑自己的天性","sub":""},{"n":119,"t":"一个人安安静静待一会儿","sub":""},{"n":120,"t":"既然认准这条路，就不要去想走多久","sub":""},{"n":121,"t":"大哭一场会好受点","sub":""},{"n":122,"t":"总会慢慢淡去的","sub":""},{"n":123,"t":"明天就会有新鲜事儿发生","sub":""},{"n":124,"t":"这事情要靠缘分","sub":""},{"n":125,"t":"太糟糕了","sub":""},{"n":126,"t":"这是起跑线","sub":""},{"n":127,"t":"没事，有我在","sub":""},{"n":128,"t":"不要把所有表情都写在脸上","sub":""},{"n":129,"t":"别人会对你苦笑","sub":""},{"n":130,"t":"好像会很累","sub":""},{"n":131,"t":"有人撑着你向前","sub":""},{"n":132,"t":"你需要的只是勇气","sub":""},{"n":133,"t":"不甘心的话，就努力争取吧","sub":""},{"n":134,"t":"无条件的付出","sub":""},{"n":135,"t":"试着更快一些","sub":""},{"n":136,"t":"这是昂贵的礼物","sub":""},{"n":137,"t":"不能永远一成不变","sub":""},{"n":138,"t":"甜蜜","sub":""},{"n":139,"t":"会有一些困难","sub":""},{"n":140,"t":"等待下一个故事的发生","sub":""},{"n":141,"t":"试着面对自己真实的想法","sub":""},{"n":142,"t":"这就是结局","sub":""},{"n":143,"t":"心会冷掉","sub":""},{"n":144,"t":"愿意并且相信","sub":""},{"n":145,"t":"守护","sub":""},{"n":146,"t":"将要奔赴一场未知的路程","sub":""},{"n":147,"t":"隐忍","sub":""},{"n":148,"t":"不必要的退让","sub":""},{"n":149,"t":"这大概会让你有点寂寞","sub":""},{"n":150,"t":"形同陌路","sub":""},{"n":151,"t":"不要轻易去相信","sub":""},{"n":152,"t":"可能会很累","sub":""},{"n":153,"t":"有些人选择了离开","sub":""},{"n":154,"t":"会让周围的人感受到温暖","sub":""},{"n":155,"t":"会有一个风光明媚的未来","sub":""},{"n":156,"t":"大概要多想一会儿","sub":""},{"n":157,"t":"值得肯定","sub":""},{"n":158,"t":"好像会有很大的麻烦","sub":""},{"n":159,"t":"注意一下周围","sub":""},{"n":160,"t":"你将会有好的运气","sub":""},{"n":161,"t":"大概吧","sub":""},{"n":162,"t":"漂亮","sub":""},{"n":163,"t":"你可能会失去一些东西","sub":""},{"n":164,"t":"看见的都不是真的","sub":""},{"n":165,"t":"苦涩","sub":""},{"n":166,"t":"看向未来","sub":""},{"n":167,"t":"笑","sub":""},{"n":168,"t":"接受的终将会接受","sub":""},{"n":169,"t":"保护你的温暖所在","sub":""},{"n":170,"t":"这就是命","sub":""},{"n":171,"t":"未来会变得特别繁忙","sub":""},{"n":172,"t":"居心叵测","sub":""},{"n":173,"t":"这简直太有趣了","sub":""},{"n":174,"t":"胜券在握","sub":""},{"n":175,"t":"突如其来的幸福","sub":""},{"n":176,"t":"平分秋色","sub":""},{"n":177,"t":"非常融洽","sub":""},{"n":178,"t":"按照一定的规律到达了终点","sub":""},{"n":179,"t":"平衡","sub":""},{"n":180,"t":"残留的遗憾","sub":""},{"n":181,"t":"拜拜","sub":""},{"n":182,"t":"特别的见解","sub":""},{"n":183,"t":"最特别的幸运","sub":""},{"n":184,"t":"值得喝一杯","sub":""},{"n":185,"t":"并不确定真伪","sub":""},{"n":186,"t":"使人警惕起来","sub":""},{"n":187,"t":"空想","sub":""},{"n":188,"t":"脚本","sub":""}]}};
+    var USAGE = ["把书放在桌上，闭上眼睛。", "用 5 至 10 秒钟集中思考你的问题（例如：“他喜欢我吗？”或“我需要换个工作吗？”）。", "在想象或说出问题的同时（每次只问一个问题），一只手放在封面上，从后往前翻动书页边缘。", "在你感觉时间正确的时候打开书，翻到的那一页即为答案。"];
+    var SOURCES = ["百花洲文艺出版社《答案之书》（保罗 著）公开 PDF 片段：https://pdfyl.ertongbook.com/36/31934932.pdf", "公开 GitHub 站点 Book-of-answers：https://dragon-chen777.github.io/Book-of-answers/", "豆丁网《313 编号答案之书（解答之书）》：https://www.docin.com/p-2458614728.html", "原创力文档《答案之书（解答之书）电子版精选答案》：https://m.book118.com/html/2025/1020/7063025026011001.shtm", "原创力文档《默念问题从 1-386 选数字》：https://m.book118.com/html/2024/0114/7064066026006031.shtm", "网络流传《答案之书》内容统计分析文档（A 套 376 条及语态标注）"];
+    var DUR = 660;
+    var AB = { key: 'A', page: null, busy: false, timers: [] };  /* page=null 表示合上的封面 */
+
+    function $(id) { return document.getElementById(id); }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
+    function toast(m) { try { if (typeof showToast === 'function') showToast(m); } catch (e) {} }
+    function set() { return SETS[AB.key]; }
+    function clearTimers() { AB.timers.forEach(clearTimeout); AB.timers = []; }
+    function later(fn, ms) { AB.timers.push(setTimeout(fn, ms)); }
+    function itemAt(n) { var s = set(); return s.items[n - s.min] || null; }
+
+    /* ---- 答案页正文 ---- */
+    function answerHTML(n) {
+        var it = itemAt(n); if (!it) return '';
+        var txt = it.t || '';
+        var cls = txt.length > 20 ? ' tiny' : (txt.length > 12 ? ' small' : '');
+        var extra = '';
+        if (AB.key === 'A' && it.mood) {
+            var mc = it.mood === '积极' ? 'pos' : (it.mood === '消极' ? 'neg' : 'neu');
+            extra = '<div class="ab-mood ' + mc + '">' + esc(it.mood) + '</div>';
+        } else if (AB.key === 'B' && it.trunc) {
+            extra = '<div class="ab-trunc">原页面在此截断，后续内容未获取到</div>';
+        } else if (AB.key === 'C' && it.sub) {
+            extra = '<div class="ab-subtext">' + esc(it.sub) + '</div>';
+        }
+        return '<div class="ab-kicker">THE BOOK OF ANSWERS</div>' +
+               '<div class="ab-answer' + cls + '">' + esc(txt) + '</div>' +
+               '<div class="ab-orn">✦　✦</div>' + extra +
+               '<div class="ab-folio">— ' + n + ' —</div>';
+    }
+    function nextHTML(n) {
+        var s = set(), p = n + 1;
+        var end = p > s.max;
+        return '<div class="ab-kicker">PAGE ' + (end ? 'END' : p) + '</div>' +
+               '<div class="ab-lines"><i></i><i></i><i></i><i></i><i></i></div>' +
+               '<div class="ab-next-tip">输入数字<br>继续往后翻</div>' +
+               '<div class="ab-folio">— ' + (end ? s.max + 1 : p) + ' —</div>';
+    }
+    function coverRightHTML() {
+        return '<div class="ab-cover-mark">✦</div><div class="ab-cover-title">答案之书</div>' +
+               '<div class="ab-cover-en">THE BOOK OF ANSWERS</div><div class="ab-cover-rule"></div>' +
+               '<div class="ab-cover-tip">静下心，想好一个问题<br>再输入一个数字</div>' +
+               '<div class="ab-cover-foot">CAT\'S INNER VOICE</div>';
+    }
+    function coverLeftHTML() {
+        return '<div class="ab-inner-mark">✦</div>' +
+               '<div class="ab-inner-txt">不必急着找答案<br>先把问题<br>轻轻放在这一页</div>' +
+               '<div class="ab-inner-foot">CAT\'S INNER VOICE</div>';
+    }
+    function passingHTML(n) {
+        return '<div class="ab-kicker">THE BOOK OF ANSWERS</div>' +
+               '<div class="ab-lines"><i></i><i></i><i></i><i></i><i></i></div>' +
+               '<div class="ab-next-tip">翻过去</div>' +
+               '<div class="ab-folio">— ' + (n || '') + ' —</div>';
+    }
+
+    function paintStatic(page) {
+        var L = $('ab-left'), R = $('ab-right');
+        if (page === null) {
+            L.className = 'ab-leaf left ab-page'; L.innerHTML = coverLeftHTML();
+            R.className = 'ab-leaf right ab-page cover'; R.innerHTML = coverRightHTML();
+        } else {
+            L.className = 'ab-leaf left ab-page'; L.innerHTML = answerHTML(page);
+            R.className = 'ab-leaf right ab-page'; R.innerHTML = nextHTML(page);
+        }
+    }
+    function updateTip(mid, k) {
+        var t = $('ab-tip'), s = set(); if (!t) return;
+        if (mid) { t.textContent = '✦ 哗啦翻过 ' + k + ' 张纸，正去往' + s.short + '第 ' + mid + ' 条…'; return; }
+        t.textContent = (AB.page === null)
+            ? s.name + '　心里想着问题，输入 ' + s.min + '~' + s.max + ' 中任意一个数字'
+            : s.name + ' · 第 ' + AB.page + ' 条　答案在刚翻过去的左页';
+    }
+    function setBusy(v) {
+        AB.busy = !!v;
+        ['ab-go','ab-prev','ab-next','ab-num'].forEach(function (id) {
+            var e = $(id); if (e) e.disabled = !!v;
+        });
+    }
+    function renderSets() {
+        var box = $('ab-sets'); if (!box) return;
+        box.innerHTML = Object.keys(SETS).map(function (k) {
+            var s = SETS[k];
+            return '<button class="ab-set' + (k === AB.key ? ' active' : '') + '" onclick="abSet(\'' + k + '\')">' +
+                   esc(s.short) + ' · ' + s.items.length + ' 条</button>';
+        }).join('');
+    }
+    function syncControls() {
+        var s = set(), inp = $('ab-num');
+        if (inp) { inp.min = s.min; inp.max = s.max; inp.placeholder = '页码 ' + s.min + '~' + s.max; }
+        renderSets();
+        var es = $('ab-entry-state');
+        if (es) es.textContent = s.short + ' · 共 ' + s.items.length + ' 条 · 连续翻书动画';
+        var note = $('ab-setnote');
+        if (note) note.innerHTML = Object.keys(SETS).map(function (k) {
+            return '<li>' + esc(SETS[k].name + '：' + SETS[k].note) + '</li>';
+        }).join('');
+    }
+
+    /* ---- 核心：生成 k 张飞页，依次掀起、翻过书脊落到左页 ---- */
+    function flip(target, rev) {
+        var s = set();
+        if (target !== null) {
+            target = Math.round(Number(target));
+            if (!isFinite(target) || target < s.min || target > s.max) {
+                toast('请输入 ' + s.min + '~' + s.max + ' 之间的数字'); return;
+            }
+        }
+        if (AB.busy) return;
+        setBusy(true); clearTimers();
+        var fromIdx = (AB.page === null ? s.min - 1 : AB.page);
+        var toIdx = (target === null ? s.min - 1 : target);
+        var diff = Math.max(1, Math.abs(toIdx - fromIdx));
+        var k = Math.min(9, Math.max(3, diff));
+        var stagger = k > 6 ? 78 : 108;
+        var stage = $('ab-stage'), wrap = $('ab-flywrap');
+        var inp = $('ab-num'); if (inp) inp.value = (target === null ? '' : target);
+        wrap.innerHTML = '';
+
+        var h = '';
+        for (var i = 0; i < k; i++) {
+            var isLast = (i === k - 1);
+            var via = fromIdx + Math.round((toIdx - fromIdx) * (i + 1) / (k + 1));
+            via = Math.max(s.min, Math.min(s.max, via));
+            var front, back, frontCls = '';
+            if (target === null) {
+                front = isLast ? coverRightHTML() : passingHTML(via);
+                back = isLast ? coverLeftHTML() : passingHTML(via);
+                if (isLast) frontCls = ' cover';
+            } else {
+                front = passingHTML(via);
+                back = isLast ? answerHTML(target) : passingHTML(via);
+            }
+            h += '<div class="ab-fly' + (rev ? ' rev' : '') + '" style="--dur:' + DUR + 'ms;--delay:' +
+                 (i * stagger) + 'ms;z-index:' + (10 + i) + '">' +
+                 '<div class="ab-side ab-fside ab-page' + frontCls + '">' + front + '</div>' +
+                 '<div class="ab-side ab-bside ab-page">' + back + '</div></div>';
+        }
+        wrap.innerHTML = h;
+        var flies = [].slice.call(wrap.querySelectorAll('.ab-fly'));
+        void stage.offsetWidth;
+        stage.classList.add('flipping');
+        updateTip(target === null ? s.min : target, k);
+
+        flies.forEach(function (el, i) {
+            later(function () { el.style.zIndex = 100 + i; }, Math.max(0, i * stagger - 6));
+        });
+        later(function () {
+            AB.page = target;
+            paintStatic(target);
+            wrap.innerHTML = '';
+            stage.classList.remove('flipping');
+            updateTip();
+            setBusy(false);
+        }, (k - 1) * stagger + DUR + 150);
+    }
+
+    window.abSet = function (key) {
+        if (AB.busy || !SETS[key]) return;
+        AB.key = key; AB.page = null;
+        clearTimers();
+        $('ab-flywrap').innerHTML = '';
+        $('ab-stage').classList.remove('flipping');
+        paintStatic(null); syncControls(); updateTip();
+        $('ab-num').value = '';
+        toast('已切换到 ' + SETS[key].name + ' · ' + SETS[key].items.length + ' 条');
+    };
+    window.abGo = function () {
+        var v = (($('ab-num') || {}).value || '').trim();
+        var s = set();
+        if (!/^\d+$/.test(v)) { toast('请输入 ' + s.min + '~' + s.max + ' 的数字'); return; }
+        var n = Number(v);
+        if (n < s.min || n > s.max) { toast(s.short + '只有 ' + s.min + '~' + s.max + ' 条'); return; }
+        flip(n, false);
+    };
+    window.abStep = function (d) {
+        if (AB.busy) return;
+        var s = set();
+        if (AB.page === null) { flip(s.min, false); return; }
+        var t = AB.page + d;
+        if (t < s.min) { toast('已经是 ' + s.short + '第一条了'); return; }
+        if (t > s.max) { toast('已经是 ' + s.short + '最后一条了'); return; }
+        flip(t, false);
+    };
+    window.abRandom = function () {
+        if (AB.busy) return;
+        var s = set();
+        flip(s.min + Math.floor(Math.random() * s.items.length), false);
+    };
+    window.abToCover = function () {
+        if (AB.busy || AB.page === null) return;
+        flip(null, true);
+    };
+    window.openAnswerBook = function () {
+        $('ab-panel').classList.add('show');
+        paintStatic(AB.page);
+        syncControls(); updateTip();
+        $('ab-num').value = (AB.page === null ? '' : AB.page);
+    };
+    window.abClose = function () {
+        if (AB.busy) return;
+        $('ab-panel').classList.remove('show');
+    };
+    window.abOpenInfo = function () { $('ab-mask').classList.add('show'); };
+    window.abCloseInfo = function () { $('ab-mask').classList.remove('show'); };
+    window.abTotal = function () { return set().items.length; };
+    window.abAnswerAt = function (n) { var it = itemAt(n); return it ? it.t : ''; };
+
+    $('ab-num').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); this.blur(); window.abGo(); }
+    });
+    $('ab-usage').innerHTML = USAGE.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('');
+    $('ab-sources').innerHTML = SOURCES.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('');
+    paintStatic(null);
+    syncControls();
+    updateTip();
+})();
+</script>
+
+</body>
+</html>
